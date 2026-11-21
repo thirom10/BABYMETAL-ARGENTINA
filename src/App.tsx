@@ -8,6 +8,7 @@ import { RadioPlayer } from './components/RadioPlayer';
 import { RadioSection } from './components/RadioSection';
 import { SetlistBuilder } from './components/SetlistBuilder';
 import { Toasts } from './components/Toasts';
+import { VideoDock } from './components/VideoDock';
 import { Wildcards } from './components/Wildcards';
 import { RadioProvider } from './state/radio';
 import { StoreProvider } from './state/store';
@@ -31,6 +32,7 @@ export default function App() {
         </main>
         <Footer />
         <RadioPlayer />
+        <VideoDock />
         <Toasts />
       </RadioProvider>
     </StoreProvider>

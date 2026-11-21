@@ -25,10 +25,11 @@ export interface CommunitySetlist {
 
 export interface RadioTrack {
   songId: string;
-  /** Image slug from src/data/images.ts */
+  /** Official YouTube video id. */
+  youtubeId: string;
+  kind: 'MV' | 'LIVE' | 'LYRIC';
+  /** Image slug from src/data/images.ts (shown before YouTube loads). */
   art: string;
-  /** Duration in seconds (demo values for the visual player). */
-  duration: number;
 }
 
 export type CommunitySort = 'popular' | 'recent' | 'votes';

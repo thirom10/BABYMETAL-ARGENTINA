@@ -38,7 +38,7 @@ export function Footer() {
 
         <p className="ft-disclaimer">
           Proyecto independiente creado por fans. <strong>No es un sitio oficial</strong> y no tiene afiliación con BABYMETAL, Amuse Inc., Movistar Arena ni
-          ninguna productora. Los setlists, votos y datos mostrados son de demostración y no anticipan el repertorio real del concierto.
+          ninguna productora. Los setlists, votos y datos mostrados son de demostración y no anticipan el repertorio real del concierto. La radio reproduce videos oficiales mediante el reproductor de YouTube (modo de privacidad mejorada), que se carga sólo cuando das play.
         </p>
 
         <details className="ft-credits">

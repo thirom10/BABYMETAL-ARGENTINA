@@ -19,8 +19,8 @@ export function RadioSection() {
           <h2 id="rs-title" className="title">
             Kitsune <span className="rs-red">Radio</span>
           </h2>
-          <p className="lede">La previa suena acá. Una radio visual que te acompaña mientras recorrés la página, armás tu setlist y esperás el show.</p>
-          <span className="demo-tag">DEMO VISUAL · SIN AUDIO</span>
+          <p className="lede">La previa suena acá: videoclips y lives oficiales de BABYMETAL que te acompañan mientras armás tu setlist y esperás el show.</p>
+          <span className="rs-yt">VIDEOS OFICIALES · VÍA YOUTUBE</span>
         </div>
 
         <div className="rs-card">
@@ -29,10 +29,16 @@ export function RadioSection() {
               <img src={artSrc(r.track.art)} alt="" width={400} height={400} loading="lazy" />
             </div>
             <div className="rs-info">
-              <span className="rs-label">{r.playing ? '● AL AIRE' : 'EN PAUSA'}</span>
+              <span className="rs-label">{r.playing ? '● AL AIRE' : r.status === 'loading' ? 'CARGANDO…' : 'EN PAUSA'}</span>
               <strong>{songTitle(r.track.songId)}</strong>
               <div className="rs-actions">
-                <button className="btn btn-primary btn-sm" onClick={r.toggle}>
+                <button
+                  className="btn btn-primary btn-sm"
+                  onClick={() => {
+                    if (!r.playing) r.setExpanded(true);
+                    r.toggle();
+                  }}
+                >
                   <Icon name={r.playing ? 'pause' : 'play'} size={16} />
                   {r.playing ? 'PAUSAR' : 'REPRODUCIR'}
                 </button>

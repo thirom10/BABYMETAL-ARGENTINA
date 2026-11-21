@@ -22,13 +22,14 @@ const RAW: Array<[id: string, title: string, category: Category]> = [
   ['song-3', 'Song 3', 'METAL FORTH'],
   ['kawaii', 'KxAxWxAxIxI', 'METAL FORTH'],
   ['sunset-kiss', 'Sunset Kiss', 'METAL FORTH'],
-  ['syncopation', 'Syncopation', 'METAL FORTH'],
   ['metali', 'METALI!!', 'METAL FORTH'],
   ['ratatata', 'RATATATA', 'METAL FORTH'],
   ['kon-kon', 'Kon! Kon!', 'METAL FORTH'],
+  ['my-queen', 'My Queen', 'METAL FORTH'],
 
   // FAN FAVORITES
   ['monochrome', 'Monochrome', 'FAN FAVORITES'],
+  ['syncopation', 'Syncopation', 'FAN FAVORITES'],
   ['pa-pa-ya', 'PA PA YA!!', 'FAN FAVORITES'],
   ['shanti-shanti-shanti', 'Shanti Shanti Shanti', 'FAN FAVORITES'],
   ['elevator-girl', 'Elevator Girl', 'FAN FAVORITES'],

@@ -12,7 +12,7 @@ Experiencia web creada **por fans** para el concierto de BABYMETAL en Buenos Air
 | Sección | Qué hace |
 |---|---|
 | **Countdown** | Hero cinematográfico + cuenta regresiva en vivo a las 21:00 (UTC-3). |
-| **Kitsune Radio** | Radio visual (sin audio): mini-reproductor desplegable con swipe en mobile, panel flotante en desktop, playlist, progreso y volumen simulados. |
+| **Kitsune Radio** | Reproduce videos oficiales de BABYMETAL con la YouTube IFrame Player API (modo privacidad mejorada, se carga recién al dar play). Mini reproductor desplegable con swipe en mobile, panel flotante en desktop. Playlist en `src/data/radio.ts`; ajuste de reproducción minimizada en `src/config/radio.ts`. |
 | **The People's Setlist** | Ranking de canciones más elegidas (votos, %, barras) + "setlist promedio" ordenado por la posición promedio que eligen los fans. Se recalcula al publicar. |
 | **Crear mi setlist** | Nickname, nombre, búsqueda, filtros por categoría, agregar / quitar / reordenar (botones + drag & drop en desktop), marcas de apertura (BABYMETAL DEATH) y cierre (ROAD OF RESISTANCE), aviso discreto si se cambian. Mobile: pestañas `CANCIONES` / `MI SETLIST` y barra inferior fija. |
 | **Publicación** | Vista previa tipo póster → confirmar → notificación → aparece primero en la comunidad. |

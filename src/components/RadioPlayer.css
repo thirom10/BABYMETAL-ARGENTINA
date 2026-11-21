@@ -39,66 +39,6 @@
   }
 }
 
-.rp-now {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  min-width: 0;
-  text-align: left;
-}
-
-.rp-art {
-  position: relative;
-  flex: none;
-  overflow: hidden;
-  border-radius: var(--radius-sm);
-  background: var(--c-surface-2);
-}
-
-.rp-art img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  animation: art-in 0.5s var(--ease-out);
-}
-
-.rp-art::after {
-  content: '';
-  position: absolute;
-  inset: 0;
-  border-radius: inherit;
-  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.12);
-}
-
-@keyframes art-in {
-  from {
-    opacity: 0;
-    transform: scale(1.06);
-  }
-}
-
-.rp-now-sm .rp-art {
-  width: 44px;
-  height: 44px;
-}
-
-.rp-now-lg {
-  flex-direction: column;
-  align-items: stretch;
-  gap: 16px;
-}
-
-.rp-now-lg .rp-art {
-  width: 100%;
-  aspect-ratio: 1;
-  border-radius: var(--radius);
-  box-shadow: 0 20px 50px -20px rgba(227, 38, 54, 0.6);
-}
-
-.rp-now-lg .rp-art.is-playing {
-  box-shadow: 0 20px 60px -14px rgba(227, 38, 54, 0.85);
-}
-
 .rp-meta {
   display: flex;
   flex-direction: column;
@@ -126,12 +66,6 @@
   text-overflow: ellipsis;
 }
 
-.rp-now-lg .rp-title {
-  font-size: 28px;
-  line-height: 1.05;
-  white-space: normal;
-}
-
 .rp-artist {
   font-family: var(--f-label);
   font-size: 12px;
@@ -140,10 +74,6 @@
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-}
-
-.rp-now-sm .rp-artist {
-  display: none;
 }
 
 .rp-controls {
@@ -312,6 +242,7 @@
 .rp-desk-head {
   display: flex;
   align-items: center;
+  justify-content: space-between;
   gap: 10px;
 }
 
@@ -324,15 +255,6 @@
 .rp-brand b {
   font-weight: 400;
   color: var(--c-red-hot);
-}
-
-.rp-demo {
-  font-family: var(--f-label);
-  font-size: 10px;
-  font-weight: 700;
-  letter-spacing: 0.18em;
-  color: var(--c-gold);
-  margin-right: auto;
 }
 
 .rp-mini-open {
@@ -379,23 +301,18 @@
 .rp-desk.is-open {
   display: flex;
   flex-direction: column;
-  gap: 14px;
-  padding: 14px 16px 16px;
+  gap: 12px;
+  padding: 12px 16px 14px;
   max-height: calc(100vh - var(--header-h) - 48px);
+  overflow: hidden;
+}
+
+.rp-desk.is-open .rp-list {
+  flex: 1 1 auto;
+  min-height: 80px;
   overflow-y: auto;
-}
-
-.rp-desk.is-open .rp-now-lg {
-  flex-direction: row;
-  align-items: center;
-}
-
-.rp-desk.is-open .rp-now-lg .rp-art {
-  width: 112px;
-}
-
-.rp-desk.is-open .rp-now-lg .rp-title {
-  font-size: 24px;
+  scrollbar-width: thin;
+  scrollbar-color: var(--c-red-dark) transparent;
 }
 
 .rp-desk .rp-row {
@@ -537,16 +454,6 @@
   overscroll-behavior: contain;
 }
 
-.rp-sheet .rp-now-lg .rp-art {
-  width: min(62vw, 300px, 34dvh);
-  margin: 0 auto;
-}
-
-.rp-sheet .rp-now-lg .rp-meta {
-  align-items: center;
-  text-align: center;
-}
-
 .rp-sheet .rp-volume {
   justify-content: center;
 }
@@ -562,4 +469,86 @@
   font-size: 12px;
   letter-spacing: 0.24em;
   color: var(--c-steel);
+}
+
+/* ============ YouTube radio additions ============ */
+.rp-meta {
+  gap: 2px;
+}
+
+.rp-meta.is-center {
+  align-items: center;
+  text-align: center;
+}
+
+.rp-meta .rp-title {
+  font-size: 24px;
+  line-height: 1.05;
+  white-space: normal;
+}
+
+.rp-artist a {
+  color: var(--c-white);
+  text-decoration: underline;
+  text-decoration-color: rgba(227, 38, 54, 0.7);
+  text-underline-offset: 3px;
+}
+
+.rp-mini-open {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  text-align: left;
+}
+
+.rp-mini-text {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.rp-mini-text .rp-title {
+  font-size: 15px;
+}
+
+.rp-list-text {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.rp-list-kind {
+  font-family: var(--f-label);
+  font-size: 10.5px;
+  letter-spacing: 0.16em;
+  color: var(--c-steel-dim);
+}
+
+.rp-list button.is-off {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.rp-list button.is-off .rp-list-title {
+  text-decoration: line-through;
+}
+
+.rp-note {
+  margin: 0;
+  font-size: 11.5px;
+  line-height: 1.4;
+  color: var(--c-steel-dim);
+}
+
+.rp-progress input:disabled {
+  cursor: default;
+  opacity: 0.6;
+}
+
+.rp-sheet-drag .vslot {
+  margin-top: 10px;
+}
+
+.rp-sheet-body {
+  padding-top: 14px;
 }
