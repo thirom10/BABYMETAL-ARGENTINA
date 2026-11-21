@@ -1,0 +1,156 @@
+.ft {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+  border-top: 1px solid var(--c-line);
+  padding: 36px 0 28px;
+}
+
+.ft-bg {
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+}
+
+.ft-bg img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  opacity: 0.12;
+  filter: grayscale(1);
+}
+
+.ft-bg::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg, var(--c-bg), rgba(9, 9, 13, 0.85));
+}
+
+.ft-inner {
+  display: grid;
+  gap: 18px;
+}
+
+.ft-brand {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px 10px;
+}
+
+.ft-name {
+  font-family: var(--f-display);
+  font-size: 24px;
+  letter-spacing: 0.04em;
+}
+
+.ft-name b {
+  font-weight: 400;
+  color: var(--c-red-hot);
+}
+
+.ft-badge {
+  padding: 2px 6px;
+  border: 1px solid var(--c-line-strong);
+  border-radius: 3px;
+  font-family: var(--f-label);
+  font-weight: 700;
+  font-size: 10px;
+  letter-spacing: 0.2em;
+  color: var(--c-steel);
+}
+
+.ft-date {
+  width: 100%;
+  font-family: var(--f-label);
+  font-size: 13px;
+  letter-spacing: 0.16em;
+  color: var(--c-steel);
+}
+
+.ft-nav {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 18px;
+}
+
+.ft-nav a {
+  padding: 6px 0;
+  font-family: var(--f-label);
+  font-weight: 600;
+  font-size: 14px;
+  letter-spacing: 0.18em;
+  color: var(--c-steel);
+  transition: color 0.2s;
+}
+
+.ft-nav a:hover {
+  color: var(--c-white);
+}
+
+.ft-disclaimer {
+  margin: 0;
+  max-width: 72ch;
+  font-size: 12.5px;
+  color: var(--c-steel-dim);
+}
+
+.ft-disclaimer strong {
+  color: var(--c-steel);
+}
+
+.ft-credits {
+  font-size: 12px;
+  color: var(--c-steel-dim);
+}
+
+.ft-credits summary {
+  cursor: pointer;
+  padding: 4px 0;
+  font-family: var(--f-label);
+  font-size: 12px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--c-steel);
+}
+
+.ft-credits ul {
+  margin: 8px 0;
+  padding-left: 16px;
+  display: grid;
+  gap: 2px;
+}
+
+.ft-credits a {
+  text-decoration: underline;
+  text-decoration-color: rgba(255, 255, 255, 0.2);
+  text-underline-offset: 2px;
+}
+
+.ft-credits a:hover {
+  color: var(--c-white);
+}
+
+.ft-credits p {
+  margin: 0;
+}
+
+@media (min-width: 960px) {
+  .ft {
+    padding: 48px 0 40px;
+  }
+  .ft-inner {
+    grid-template-columns: 1fr auto;
+    align-items: center;
+    column-gap: 40px;
+  }
+  .ft-disclaimer,
+  .ft-credits {
+    grid-column: 1 / -1;
+  }
+  /* keep clear of the desktop floating radio */
+  .ft-credits {
+    max-width: calc(100% - 380px);
+  }
+}

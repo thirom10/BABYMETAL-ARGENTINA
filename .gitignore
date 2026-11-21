@@ -155,3 +155,45 @@ vite.config.ts.timestamp-*
 .nx/cache
 .nx/workspace-data
 .nx/migrate-runs
+
+# ------------------------------------------------------------------
+# BABYMETAL ARGENTINA — project-specific rules
+# ------------------------------------------------------------------
+
+# Secrets & credentials (never commit). .env.example stays tracked.
+.env.local
+.env.*.local
+*.pem
+*.key
+*.p12
+*.pfx
+*.crt
+credentials*.json
+service-account*.json
+secrets/
+.secrets/
+
+# Supabase local state (future)
+supabase/.temp/
+supabase/.branches/
+supabase/.env
+
+# Deploy tooling local state
+.vercel/
+.netlify/
+
+# Original, unoptimized images (regenerate with `npm run images`)
+assets-src/
+*.tmp.json
+
+# Editors & OS
+.vscode/*
+!.vscode/extensions.json
+.idea/
+*.swp
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Local agent / tool settings
+.claude/

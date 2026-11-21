@@ -1,0 +1,121 @@
+.poster {
+  position: relative;
+  overflow: hidden;
+  border: 1px solid var(--c-line-strong);
+  border-radius: 12px;
+  background:
+    repeating-linear-gradient(-60deg, transparent 0 18px, rgba(255, 255, 255, 0.02) 18px 19px),
+    linear-gradient(170deg, #1a0b10 0%, #0d0d12 55%);
+}
+
+.poster::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 4px;
+  background: linear-gradient(180deg, var(--c-red-hot), var(--c-red-dark));
+}
+
+.poster-head {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 18px 18px 14px 22px;
+  border-bottom: 1px dashed var(--c-line-strong);
+}
+
+.poster-event {
+  font-family: var(--f-label);
+  font-weight: 700;
+  font-size: 11px;
+  letter-spacing: 0.24em;
+  color: var(--c-red-hot);
+}
+
+.poster-name {
+  margin: 0;
+  font-family: var(--f-display);
+  font-weight: 400;
+  font-size: 28px;
+  line-height: 1;
+  text-transform: uppercase;
+  overflow-wrap: anywhere;
+}
+
+.poster-author {
+  font-size: 13px;
+  color: var(--c-steel);
+}
+
+.poster-author b {
+  color: var(--c-white);
+}
+
+.poster-list {
+  list-style: none;
+  margin: 0;
+  padding: 10px 18px 10px 22px;
+  display: grid;
+  gap: 0;
+}
+
+.poster-list li {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 6px 0;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.poster-num {
+  flex: none;
+  width: 24px;
+  font-family: var(--f-display);
+  font-size: 16px;
+  color: var(--c-steel-dim);
+}
+
+.poster-song {
+  flex: 1;
+  min-width: 0;
+  font-weight: 600;
+  font-size: 14.5px;
+}
+
+.poster-list li.is-special .poster-num,
+.poster-list li.is-special .poster-song {
+  color: var(--c-red-hot);
+}
+
+.poster-tag {
+  flex: none;
+  padding: 1px 6px;
+  border-radius: 3px;
+  background: var(--c-red);
+  font-family: var(--f-label);
+  font-weight: 700;
+  font-size: 9.5px;
+  letter-spacing: 0.16em;
+}
+
+.poster-foot {
+  padding: 10px 18px 14px 22px;
+  font-family: var(--f-label);
+  font-size: 11px;
+  letter-spacing: 0.2em;
+  color: var(--c-steel-dim);
+}
+
+@media (min-width: 720px) {
+  .poster-name {
+    font-size: 36px;
+  }
+  .poster-list {
+    grid-template-columns: 1fr 1fr;
+    column-gap: 28px;
+    grid-auto-flow: column;
+    grid-template-rows: repeat(var(--rows, 8), auto);
+  }
+}
