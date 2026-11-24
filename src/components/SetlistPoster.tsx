@@ -1,5 +1,7 @@
 import { CLOSER_ID, EVENT, OPENER_ID } from '../config/event';
 import { songTitle } from '../data/songs';
+import type { SocialNetwork } from '../types';
+import { OpenersLine, SocialLink } from './SocialLink';
 import './SetlistPoster.css';
 
 interface Props {
@@ -7,10 +9,13 @@ interface Props {
   author: string;
   songIds: string[];
   meta?: string;
+  openers?: string[];
+  socialNetwork?: SocialNetwork | null;
+  socialHandle?: string | null;
 }
 
 /** Poster-style rendering of a setlist, used in the publish preview and the full view. */
-export function SetlistPoster({ name, author, songIds, meta }: Props) {
+export function SetlistPoster({ name, author, songIds, meta, openers = [], socialNetwork, socialHandle }: Props) {
   return (
     <article className="poster">
       <header className="poster-head">
@@ -22,6 +27,8 @@ export function SetlistPoster({ name, author, songIds, meta }: Props) {
           por <b>{author}</b>
           {meta && <> · {meta}</>}
         </span>
+        <SocialLink network={socialNetwork} handle={socialHandle} />
+        <OpenersLine openers={openers} className="poster-openers" />
       </header>
       <ol className="poster-list" style={{ '--rows': Math.ceil(songIds.length / 2) } as React.CSSProperties}>
         {songIds.map((id, i) => {

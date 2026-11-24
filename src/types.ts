@@ -7,6 +7,8 @@ export interface Song {
   category: Category;
 }
 
+export type SocialNetwork = 'instagram' | 'tiktok' | 'x' | 'youtube' | 'facebook' | 'twitch';
+
 export interface CommunitySetlist {
   id: string;
   name: string;
@@ -17,6 +19,11 @@ export interface CommunitySetlist {
   likes: number;
   votes: number;
   copies: number;
+  /** Opening acts (teloneros) the author imagines for the night. */
+  openers: string[];
+  /** Author's preferred social network + username (both or neither). */
+  socialNetwork?: SocialNetwork | null;
+  socialHandle?: string | null;
   /** Flags for the current visitor. */
   liked?: boolean;
   voted?: boolean;
@@ -52,3 +59,14 @@ export interface Ranking {
 }
 
 export type ReactionKind = 'like' | 'vote';
+
+/** Data about the signed-in account (null while anonymous / signed out). */
+export interface Account {
+  nickname: string | null;
+  socialNetwork: SocialNetwork | null;
+  socialHandle: string | null;
+  /** Setlists already published by this account. */
+  used: number;
+  /** Maximum setlists per account. */
+  max: number;
+}

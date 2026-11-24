@@ -678,3 +678,184 @@
     min-height: 50px;
   }
 }
+
+/* ============ account card, social + openers ============ */
+.sb-account {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-bottom: 14px;
+  padding: 12px 14px;
+  border: 1px solid var(--c-line-strong);
+  border-left: 3px solid var(--c-red);
+  border-radius: var(--radius-sm);
+  background: linear-gradient(90deg, rgba(116, 17, 30, 0.35), rgba(20, 20, 27, 0.85) 70%);
+}
+
+.sb-account-text {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.sb-account-text strong {
+  font-family: var(--f-label);
+  font-size: 15px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.sb-account-text span {
+  font-size: 13px;
+  color: var(--c-steel);
+}
+
+.sb-account-btn {
+  align-self: flex-start;
+  gap: 8px;
+}
+
+.sb-account.is-in {
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.sb-account-meter {
+  display: flex;
+  flex: none;
+  gap: 5px;
+}
+
+.sb-account-meter i {
+  width: 16px;
+  height: 8px;
+  border-radius: 2px;
+  background: rgba(255, 255, 255, 0.14);
+  transform: skewX(-20deg);
+}
+
+.sb-account-meter i.is-on {
+  background: var(--c-red);
+  box-shadow: 0 0 8px rgba(227, 38, 54, 0.7);
+}
+
+.sb-extras {
+  display: grid;
+  gap: 12px;
+  margin: -4px 0 16px;
+}
+
+.sb-hint {
+  font-size: 12px;
+  line-height: 1.35;
+  color: var(--c-steel-dim);
+}
+
+.sb-field select {
+  width: 100%;
+  min-height: 46px;
+  padding: 0 12px;
+  border: 1px solid var(--c-line-strong);
+  border-radius: var(--radius-sm);
+  background: rgba(20, 20, 27, 0.85);
+  font-size: 16px;
+  color: var(--c-white);
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.sb-field select:focus,
+.sb-field input:disabled:focus {
+  outline: none;
+  border-color: var(--c-red);
+  box-shadow: 0 0 0 3px rgba(227, 38, 54, 0.2);
+}
+
+.sb-field input:disabled {
+  opacity: 0.5;
+}
+
+.sb-social-row {
+  display: grid;
+  grid-template-columns: minmax(0, 140px) minmax(0, 1fr);
+  gap: 8px;
+}
+
+.sb-openers-row {
+  display: flex;
+  gap: 8px;
+}
+
+.sb-openers-row input {
+  flex: 1;
+  min-width: 0;
+}
+
+.sb-openers-row .btn {
+  flex: none;
+  min-height: 46px;
+}
+
+.sb-chips-list {
+  list-style: none;
+  margin: 4px 0 0;
+  padding: 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.sb-opener {
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+  max-width: 100%;
+  padding: 0 2px 0 12px;
+  border: 1px solid rgba(232, 182, 90, 0.45);
+  border-radius: 999px;
+  background: rgba(232, 182, 90, 0.08);
+  font-weight: 600;
+  font-size: 14px;
+}
+
+.sb-opener span {
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
+.sb-opener button {
+  display: grid;
+  place-items: center;
+  flex: none;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  color: var(--c-steel);
+}
+
+.sb-opener button:hover {
+  color: var(--c-red-hot);
+}
+
+@media (min-width: 600px) {
+  .sb-extras {
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+  }
+  .sb-account {
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+  }
+  .sb-account-btn {
+    align-self: center;
+  }
+}
+
+@media (min-width: 960px) {
+  .sb-account,
+  .sb-extras {
+    max-width: 760px;
+  }
+}

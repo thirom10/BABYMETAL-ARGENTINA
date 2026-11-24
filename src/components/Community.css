@@ -323,3 +323,35 @@
   border-color: rgba(227, 38, 54, 0.5);
   color: var(--c-white);
 }
+
+.cc-author {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 4px 8px;
+}
+
+.cc-openers {
+  padding: 0 2px;
+}
+
+.cc-btn.is-danger:hover {
+  color: var(--c-red-hot);
+  background: rgba(227, 38, 54, 0.1);
+}
+
+@media (max-width: 420px) {
+  .cc-btn.is-danger span {
+    display: none;
+  }
+}
+
+.del-text {
+  margin: 4px 0 8px;
+  font-size: 15px;
+  color: var(--c-steel);
+}
+
+.del-text b {
+  color: var(--c-white);
+}

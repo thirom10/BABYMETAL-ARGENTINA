@@ -7,7 +7,9 @@ import { useStore } from '../state/store';
 import type { CommunitySetlist, CommunitySort } from '../types';
 import { DESKTOP_QUERY, useMediaQuery } from '../hooks/useMediaQuery';
 import { Icon } from './Icon';
+import { friendlyError } from '../services/errors';
 import { Modal } from './Modal';
+import { OpenersLine, SocialLink } from './SocialLink';
 import { SetlistPoster } from './SetlistPoster';
 import './Community.css';
 
@@ -20,7 +22,19 @@ const SORTS: Array<{ id: CommunitySort; label: string }> = [
 const PAGE_MOBILE = 4;
 const PAGE_DESKTOP = 6;
 
-function SetlistCard({ s, highlight, onView, onCopy }: { s: CommunitySetlist; highlight: boolean; onView: () => void; onCopy: () => void }) {
+function SetlistCard({
+  s,
+  highlight,
+  onView,
+  onCopy,
+  onDelete,
+}: {
+  s: CommunitySetlist;
+  highlight: boolean;
+  onView: () => void;
+  onCopy: () => void;
+  onDelete: () => void;
+}) {
   const { react } = useStore();
   const preview = s.songIds.slice(0, 4);
   const rest = s.songIds.length - preview.length;
@@ -34,6 +48,7 @@ function SetlistCard({ s, highlight, onView, onCopy }: { s: CommunitySetlist; hi
           <h3 className="cc-name">{s.name}</h3>
           <span className="cc-author">
             <b>@{s.author}</b> · {formatDate(s.createdAt)}
+            <SocialLink network={s.socialNetwork} handle={s.socialHandle} />
           </span>
         </div>
         <span className="cc-count">
@@ -41,6 +56,8 @@ function SetlistCard({ s, highlight, onView, onCopy }: { s: CommunitySetlist; hi
           <small>TEMAS</small>
         </span>
       </header>
+
+      <OpenersLine openers={s.openers} className="cc-openers" />
 
       <ol className="cc-preview">
         {preview.map((id, i) => (
@@ -69,6 +86,12 @@ function SetlistCard({ s, highlight, onView, onCopy }: { s: CommunitySetlist; hi
           <span>{formatNumber(s.votes)}</span>
         </button>
         <span className="cc-spacer" />
+        {s.isOwn && (
+          <button className="cc-btn is-danger" onClick={onDelete} aria-label={`Borrar ${s.name}`}>
+            <Icon name="trash" size={16} />
+            <span>BORRAR</span>
+          </button>
+        )}
         <button className="cc-btn" onClick={onCopy} aria-label={`Usar ${s.name} como base`}>
           <Icon name="copy" size={16} />
           <span>USAR DE BASE</span>
@@ -83,13 +106,15 @@ function SetlistCard({ s, highlight, onView, onCopy }: { s: CommunitySetlist; hi
 }
 
 export function Community() {
-  const { state, notify, copyAsBase, reload } = useStore();
+  const { state, notify, copyAsBase, reload, removeSetlist } = useStore();
   const [sort, setSort] = useState<CommunitySort>('popular');
   const desktop = useMediaQuery(DESKTOP_QUERY);
   const page = desktop ? PAGE_DESKTOP : PAGE_MOBILE;
   const [extra, setExtra] = useState(0);
   const limit = page + extra;
   const [viewing, setViewing] = useState<CommunitySetlist | null>(null);
+  const [deleting, setDeleting] = useState<CommunitySetlist | null>(null);
+  const [busy, setBusy] = useState(false);
 
   // After publishing, show newest first so the visitor sees their setlist.
   useEffect(() => {
@@ -156,7 +181,7 @@ export function Community() {
 
         <div className="cm-grid">
           {sorted.slice(0, limit).map((s) => (
-            <SetlistCard key={s.id} s={s} highlight={s.id === state.lastPublishedId} onView={() => setViewing(s)} onCopy={() => copy(s)} />
+            <SetlistCard key={s.id} s={s} highlight={s.id === state.lastPublishedId} onView={() => setViewing(s)} onCopy={() => copy(s)} onDelete={() => setDeleting(s)} />
           ))}
         </div>
 
@@ -186,8 +211,48 @@ export function Community() {
             name={viewing.name}
             author={`@${viewing.author}`}
             songIds={viewing.songIds}
+            openers={viewing.openers}
+            socialNetwork={viewing.socialNetwork}
+            socialHandle={viewing.socialHandle}
             meta={`${formatDate(viewing.createdAt)} · ♥ ${formatNumber(state.community.find((c) => c.id === viewing.id)?.likes ?? viewing.likes)}`}
           />
+        </Modal>
+      )}
+
+      {deleting && (
+        <Modal
+          title="BORRAR SETLIST"
+          onClose={() => !busy && setDeleting(null)}
+          footer={
+            <>
+              <button className="btn btn-ghost" onClick={() => setDeleting(null)} disabled={busy}>
+                CANCELAR
+              </button>
+              <button
+                className="btn btn-primary"
+                disabled={busy}
+                aria-busy={busy}
+                onClick={async () => {
+                  setBusy(true);
+                  try {
+                    await removeSetlist(deleting.id);
+                    notify('Setlist borrado. Ya podés publicar otro.', 'success');
+                    setDeleting(null);
+                  } catch (e) {
+                    notify(friendlyError(e));
+                  } finally {
+                    setBusy(false);
+                  }
+                }}
+              >
+                {busy ? 'BORRANDO…' : 'SÍ, BORRAR'}
+              </button>
+            </>
+          }
+        >
+          <p className="del-text">
+            Vas a borrar <b>“{deleting.name}”</b> junto con sus likes y votos. No se puede deshacer.
+          </p>
         </Modal>
       )}
     </section>

@@ -18,3 +18,5 @@ Todas las fotografías provienen de [Wikimedia Commons](https://commons.wikimedi
 | `public/images/festival-crowd-*.webp` | Birgit Fostervold | [CC BY-SA 4.0](https://creativecommons.org/licenses/by-sa/4.0) | [BABYMETAL Tons of Rock Oslo 2026 38](https://commons.wikimedia.org/wiki/File:BABYMETAL_Tons_of_Rock_Oslo_2026_38.jpg) |
 
 Las obras derivadas de imágenes CC BY-SA se distribuyen bajo la misma licencia CC BY-SA 4.0.
+
+Nota: la foto principal de la portada es `trio-red` (Selbymay, CC BY 4.0, ver tabla). No se usa ninguna imagen de Getty Images ni con marca de agua.

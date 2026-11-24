@@ -3,10 +3,14 @@ import { CLOSER_ID, OPENER_ID } from '../config/event';
 import { imgSrc, imgSrcSet } from '../data/images';
 import { CATEGORY_FILTERS, SONGS, SONG_BY_ID, songTitle } from '../data/songs';
 import { DESKTOP_QUERY, useMediaQuery } from '../hooks/useMediaQuery';
+import { HANDLE_RE } from '../config/social';
 import { cleanText } from '../lib/format';
+import { useAuth } from '../state/auth';
 import { MAX_SONGS, useStore } from '../state/store';
 import type { CategoryFilter } from '../types';
+import { AccountCard, BuilderExtras } from './BuilderExtras';
 import { Icon } from './Icon';
+import { LoginModal } from './LoginModal';
 import { PublishModal } from './PublishModal';
 import './SetlistBuilder.css';
 
@@ -245,8 +249,10 @@ function SetlistEditor({ onPublish }: { onPublish: () => void }) {
 
 export function SetlistBuilder() {
   const { state, dispatch, notify } = useStore();
+  const auth = useAuth();
   const [modal, setModal] = useState(false);
-  const [errors, setErrors] = useState<{ nick?: boolean; name?: boolean }>({});
+  const [loginModal, setLoginModal] = useState(false);
+  const [errors, setErrors] = useState<{ nick?: boolean; name?: boolean; social?: boolean }>({});
   const tabsRef = useRef<HTMLDivElement>(null);
   const nickRef = useRef<HTMLInputElement>(null);
   const tab = state.builderTab;
@@ -275,14 +281,26 @@ export function SetlistBuilder() {
       switchTab('songs', true);
       return;
     }
-    if (nick || name) {
-      setErrors({ nick, name });
-      notify('Elegí tu nickname y un nombre para el setlist.');
+    const handle = state.socialHandle.trim();
+    // A network without a valid username cannot be saved.
+    const social = Boolean(state.socialNetwork) && !HANDLE_RE.test(handle);
+    if (nick || name || social) {
+      setErrors({ nick, name, social });
+      notify(social ? 'Completá tu usuario de la red social o elegí "Ninguna".' : 'Elegí tu nickname y un nombre para el setlist.');
       document.getElementById('crear-id')?.scrollIntoView({ behavior: 'smooth', block: 'center' });
       window.setTimeout(() => nickRef.current?.focus({ preventScroll: true }), 400);
       return;
     }
     setErrors({});
+    // Publishing needs a real account (Google). Likes and votes do not.
+    if (auth.enabled && !auth.user) {
+      setLoginModal(true);
+      return;
+    }
+    if (state.account && state.account.used >= state.account.max) {
+      notify(`Ya publicaste ${state.account.max} setlists. Borrá uno tuyo en la comunidad para publicar otro.`);
+      return;
+    }
     setModal(true);
   };
 
@@ -303,6 +321,8 @@ export function SetlistBuilder() {
           <p className="lede">Elegí las canciones, ordenalas y publicá tu setlist soñado para Buenos Aires. Arrancamos con una propuesta de fans: cambiala como quieras.</p>
           <span className="demo-tag">PROPUESTA INICIAL: HIPÓTESIS DE FANS, NO CONFIRMADA</span>
         </div>
+
+        <AccountCard onLogin={() => setLoginModal(true)} />
 
         <div id="crear-id" className="sb-identity">
           <label className={`sb-field ${errors.nick ? 'is-error' : ''}`}>
@@ -335,6 +355,8 @@ export function SetlistBuilder() {
             />
           </label>
         </div>
+
+        <BuilderExtras socialError={Boolean(errors.social)} />
 
         <div className="sb-tabs" ref={tabsRef} role="tablist" aria-label="Creador de setlist">
           <button role="tab" id="tab-songs" aria-controls="panel-songs" aria-selected={tab === 'songs'} onClick={() => switchTab('songs', true)}>
@@ -385,6 +407,7 @@ export function SetlistBuilder() {
       </div>
 
       {modal && <PublishModal onClose={() => setModal(false)} />}
+      {loginModal && <LoginModal onClose={() => setLoginModal(false)} />}
     </section>
   );
 }

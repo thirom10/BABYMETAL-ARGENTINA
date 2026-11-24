@@ -119,3 +119,12 @@
     grid-template-rows: repeat(var(--rows, 8), auto);
   }
 }
+
+.poster-head .social-link {
+  align-self: flex-start;
+  margin-top: 4px;
+}
+
+.poster-openers {
+  margin-top: 6px;
+}

@@ -15,7 +15,8 @@ export function getSupabase(): Promise<SupabaseClient> {
   client ??= import('@supabase/supabase-js')
     .then(({ createClient }) =>
       createClient(publicEnv.supabaseUrl, publicEnv.supabaseAnonKey, {
-        auth: { persistSession: true, autoRefreshToken: true, detectSessionInUrl: false },
+        // PKCE + detectSessionInUrl: completes the Google sign-in when Supabase redirects back with ?code=...
+        auth: { persistSession: true, autoRefreshToken: true, detectSessionInUrl: true, flowType: 'pkce' },
       }),
     )
     .catch((e) => {

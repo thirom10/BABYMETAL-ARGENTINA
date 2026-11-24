@@ -232,3 +232,10 @@
     display: none !important;
   }
 }
+
+/* free horizontal space for the sign-in control on mid-size desktops */
+@media (min-width: 960px) and (max-width: 1179px) {
+  .hdr-badge {
+    display: none;
+  }
+}

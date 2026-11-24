@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { SECTIONS } from '../config/event';
 import { useActiveSection } from '../hooks/useActiveSection';
 import { scrollToId } from '../lib/format';
+import { AuthControls } from './AuthControls';
 import { Icon } from './Icon';
 import './Header.css';
 
@@ -67,6 +68,7 @@ export function Header() {
         </nav>
 
         <div className="hdr-actions">
+          <AuthControls variant="bar" />
           <button className="btn btn-primary btn-sm hdr-cta" onClick={() => go('crear')}>
             <span className="hdr-cta-long">CREAR MI SETLIST</span>
             <span className="hdr-cta-short">CREAR SETLIST</span>
@@ -101,6 +103,7 @@ export function Header() {
             {s.label}
           </a>
         ))}
+        <AuthControls variant="sheet" />
       </nav>
       {open && <button className="hdr-scrim" aria-label="Cerrar menú" onClick={() => setOpen(false)} />}
     </header>

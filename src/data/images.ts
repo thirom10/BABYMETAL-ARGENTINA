@@ -4,7 +4,7 @@
  * 400x400 square crop (see artSrc).
  */
 const WIDTHS: Record<string, number[]> = {
-  'hero-fire': [640, 1280, 1920],
+  'trio-red': [640, 1280, 1920],
   'stage-red': [640, 1280, 1920],
   'crowd-red': [640, 1280, 1920],
   'pyro-stage': [640, 1280],

@@ -10,6 +10,7 @@ export const MOCK_COMMUNITY: CommunitySetlist[] = [
     likes: 412,
     votes: 188,
     copies: 37,
+    openers: [],
     songIds: ['babymetal-death', 'megitsune', 'from-me-to-u', 'pa-pa-ya', 'kawaii', 'monochrome', 'distortion', 'song-3', 'metali', 'gimme-chocolate', 'ratatata', 'karate', 'headbangeeeeerrrrr', 'road-of-resistance'],
   },
   {
@@ -20,6 +21,7 @@ export const MOCK_COMMUNITY: CommunitySetlist[] = [
     likes: 268,
     votes: 241,
     copies: 22,
+    openers: [],
     songIds: ['babymetal-death', 'from-me-to-u', 'song-3', 'kawaii', 'sunset-kiss', 'syncopation', 'metali', 'kon-kon', 'ratatata', 'gimme-chocolate', 'road-of-resistance'],
   },
   {
@@ -30,6 +32,7 @@ export const MOCK_COMMUNITY: CommunitySetlist[] = [
     likes: 351,
     votes: 97,
     copies: 54,
+    openers: [],
     songIds: ['arkadia', 'megitsune', 'ijime-dame-zettai', 'doki-doki-morning', 'akatsuki', 'distortion', 'karate', 'the-one', 'iine', 'road-of-resistance'],
   },
   {
@@ -40,6 +43,7 @@ export const MOCK_COMMUNITY: CommunitySetlist[] = [
     likes: 94,
     votes: 63,
     copies: 5,
+    openers: [],
     songIds: ['babymetal-death', 'distortion', 'megitsune', 'elevator-girl', 'shanti-shanti-shanti', 'monochrome', 'pa-pa-ya', 'karate', 'gimme-chocolate', 'headbangeeeeerrrrr', 'road-of-resistance'],
   },
   {
@@ -50,6 +54,7 @@ export const MOCK_COMMUNITY: CommunitySetlist[] = [
     likes: 187,
     votes: 205,
     copies: 12,
+    openers: [],
     songIds: ['babymetal-death', 'metalizm', 'divine-attack', 'kawaii', 'song-3', 'yava', 'karate', 'syncopation', 'ratatata', 'headbangeeeeerrrrr', 'gimme-chocolate', 'road-of-resistance'],
   },
   {
@@ -60,6 +65,7 @@ export const MOCK_COMMUNITY: CommunitySetlist[] = [
     likes: 143,
     votes: 76,
     copies: 9,
+    openers: [],
     songIds: ['from-me-to-u', 'babymetal-death', 'megitsune', 'sunset-kiss', 'starlight', 'monochrome', 'iine', 'metali', 'ratatata', 'road-of-resistance', 'the-one'],
   },
 ];

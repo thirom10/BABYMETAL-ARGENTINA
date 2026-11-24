@@ -21,7 +21,7 @@ Experiencia web creada **por fans** para el concierto de BABYMETAL en Buenos Air
 
 El estado de la interfaz es local (React `useReducer` + Context). Los datos de la comunidad vienen de `setlistRepository`:
 
-- **Con Supabase configurado** (variables `VITE_PUBLIC_SUPABASE_*`): datos reales y compartidos, con sesión anónima para likes/votos. Guía en [`supabase/README.md`](supabase/README.md).
+- **Con Supabase configurado** (variables `VITE_PUBLIC_SUPABASE_*`): datos reales y compartidos. **Publicar requiere cuenta de Google** (máx. 3 setlists por cuenta, con nickname, red social opcional y teloneros); likes y votos usan una sesión anónima. Guía en [`supabase/README.md`](supabase/README.md).
 - **Sin configurar**: datos de demostración en memoria (nada persiste).
 
 ## Requisitos

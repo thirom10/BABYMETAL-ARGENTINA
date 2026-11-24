@@ -33,6 +33,10 @@ console.log('== Sin sesión (rol anon) ==');
 const list = await sb.rpc('list_setlists');
 check('list_setlists responde', !list.error, list.error?.message);
 check('hay setlists (¿corriste seed.sql?)', (list.data?.length ?? 0) > 0, `${list.data?.length ?? 0} setlists`);
+check('list_setlists trae teloneros y red social (¿corriste 0002?)', Array.isArray(list.data?.[0]?.openers), list.error?.message);
+
+const profilesDirect = await sb.from('profiles').select('*').limit(1);
+check('la tabla profiles NO se puede leer directo', Boolean(profilesDirect.error) || (profilesDirect.data ?? []).length === 0, profilesDirect.error?.code);
 
 const rank = await sb.rpc('people_ranking');
 check('people_ranking responde', !rank.error, rank.error?.message);
@@ -70,6 +74,41 @@ if (!auth.error) {
 
   const noName = await sb.rpc('publish_setlist', { p_name: '   ', p_author: 'Smoke', p_song_ids: ['megitsune', 'iine', 'karate', 'monochrome', 'ratatata'] });
   check('rechaza nombre vacío', noName.error?.message?.includes('INVALID_NAME'), noName.error?.message);
+
+  const five = ['megitsune', 'iine', 'karate', 'monochrome', 'ratatata'];
+  const base = { p_name: 'Prueba', p_author: 'Smoke', p_song_ids: five };
+
+  const manyOpeners = await sb.rpc('publish_setlist', { ...base, p_openers: ['a', 'b', 'c', 'd', 'e', 'f'] });
+  check('rechaza más de 5 teloneros', manyOpeners.error?.message?.includes('INVALID_OPENERS'), manyOpeners.error?.message);
+
+  const longOpener = await sb.rpc('publish_setlist', { ...base, p_openers: ['x'.repeat(31)] });
+  check('rechaza telonero de más de 30 caracteres', longOpener.error?.message?.includes('INVALID_OPENERS'), longOpener.error?.message);
+
+  const halfSocial = await sb.rpc('publish_setlist', { ...base, p_social_network: 'instagram', p_social_handle: null });
+  check('rechaza red social sin usuario', halfSocial.error?.message?.includes('INVALID_SOCIAL'), halfSocial.error?.message);
+
+  const badNet = await sb.rpc('publish_setlist', { ...base, p_social_network: 'myspace', p_social_handle: 'x' });
+  check('rechaza red social desconocida', badNet.error?.message?.includes('INVALID_SOCIAL'), badNet.error?.message);
+
+  const badHandle = await sb.rpc('publish_setlist', { ...base, p_social_network: 'instagram', p_social_handle: 'a b/../c' });
+  check('rechaza usuario con caracteres inválidos', badHandle.error?.message?.includes('INVALID_SOCIAL'), badHandle.error?.message);
+
+  const anonPublish = await sb.rpc('publish_setlist', {
+    ...base,
+    p_openers: ['nvlo'],
+    p_social_network: 'instagram',
+    p_social_handle: 'usuario.demo',
+  });
+  check('una sesión ANÓNIMA no puede publicar (pide cuenta real)', anonPublish.error?.message?.includes('LOGIN_REQUIRED'), anonPublish.error?.message);
+
+  const acct = await sb.rpc('my_account');
+  check('my_account marca la sesión como anónima', acct.data?.[0]?.is_anonymous === true, JSON.stringify(acct.data?.[0] ?? acct.error?.message));
+
+  const delFake = await sb.rpc('delete_setlist', { p_setlist_id: '00000000-0000-4000-8000-0000000000ff' });
+  check('borrar un setlist ajeno / inexistente falla', delFake.error?.message?.includes('NOT_FOUND'), delFake.error?.message);
+
+  const delDemo = await sb.rpc('delete_setlist', { p_setlist_id: '00000000-0000-4000-8000-000000000001' });
+  check('no se pueden borrar los setlists de ejemplo', delDemo.error?.message?.includes('NOT_FOUND'), delDemo.error?.message);
 
   const first = list.data?.[0]?.id;
   if (first) {

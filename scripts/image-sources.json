@@ -1,10 +1,10 @@
 [
-  { "slug": "hero-fire",       "file": "HF2024BabyMetal 4.jpg",                                "widths": [640, 1280, 1920], "square": true },
+  { "slug": "hero-fire",       "file": "HF2024BabyMetal 4.jpg",                                "widths": [], "square": true },
   { "slug": "stage-red",       "file": "BABYMETAL Tons of Rock Oslo 2026 25.jpg",              "widths": [640, 1280, 1920] },
   { "slug": "crowd-red",       "file": "Babymetal - US Tour 2019 01.jpg",                      "widths": [640, 1280, 1920] },
   { "slug": "pyro-stage",      "file": "BABYMETAL Tons of Rock Oslo 2026 01.jpg",              "widths": [640, 1280], "square": true },
   { "slug": "fans",            "file": "BABYMETAL Tons of Rock Oslo 2026 07.jpg",              "widths": [640, 1280] },
-  { "slug": "trio-red",        "file": "HF2024BabyMetal 5.jpg",                                "widths": [], "square": true },
+  { "slug": "trio-red",        "file": "HF2024BabyMetal 5.jpg",                                "widths": [640, 1280, 1920], "square": true },
   { "slug": "live-fist",       "file": "BABYMETAL Tons of Rock Oslo 2026 23.jpg",              "widths": [], "square": true },
   { "slug": "live-spin",       "file": "BABYMETAL Tons of Rock Oslo 2026 21.jpg",              "widths": [], "square": true },
   { "slug": "live-jump",       "file": "HF2024BabyMetal 2.jpg",                                "widths": [], "square": true },

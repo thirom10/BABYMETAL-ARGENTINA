@@ -41,12 +41,16 @@ npm run build      # incluye `tsc -b`; debe pasar sin errores antes de commitear
 
 ## Supabase (integrado)
 
-- Esquema y funciones: `supabase/migrations/0001_init.sql`; ejemplos: `supabase/seed.sql`; guía: `supabase/README.md`.
-- Las tablas tienen RLS **sin policies**; el navegador sólo llama funciones `SECURITY DEFINER` (ver README de supabase).
-  Cualquier cambio nuevo: nueva migración numerada, RLS activado, `revoke` + `grant execute` explícitos.
-- La UI sólo habla con `setlistRepository` (`src/services/setlistRepository.ts`), asíncrono, con implementación
-  mock (sin env) y Supabase (con env). Errores normalizados en `src/services/errors.ts`.
-- Sesión anónima perezosa (`ensureSession` en `src/lib/supabase.ts`): sólo al escribir, nunca al navegar.
+- Esquema y funciones: `supabase/migrations/0001_init.sql` y `0002_accounts_socials_openers.sql`; ejemplos: `supabase/seed.sql`;
+  guía (incluye Google OAuth): `supabase/README.md`.
+- Las tablas tienen RLS **sin policies**; el navegador sólo llama funciones `SECURITY DEFINER`. Cualquier cambio nuevo:
+  migración numerada, RLS activado, `revoke` + `grant execute` explícitos.
+- La UI sólo habla con `setlistRepository` (`src/services/setlistRepository.ts`) y `authService` (`src/services/auth.ts`),
+  ambos con implementación mock (sin env) y Supabase (con env). Errores normalizados en `src/services/errors.ts`.
+- Publicar exige cuenta real de Google (las sesiones anónimas sólo sirven para likes/votos); tope de 3 setlists por cuenta.
+  Sesión anónima perezosa (`ensureSession` en `src/lib/supabase.ts`): sólo al escribir, nunca al navegar.
+- El borrador del creador vive en localStorage (`src/lib/draft.ts`) para sobrevivir al viaje a Google.
+- Redes sociales: `src/config/social.ts` (el usuario se valida antes de armar el link).
 - Si agregás canciones, hay que agregarlas también a la tabla `songs` (migración nueva).
 
 ## Despliegue

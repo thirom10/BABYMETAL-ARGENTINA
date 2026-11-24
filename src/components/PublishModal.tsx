@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { scrollToId } from '../lib/format';
+import { HANDLE_RE } from '../config/social';
 import { friendlyError } from '../services/errors';
 import { useStore } from '../state/store';
 import { Modal } from './Modal';
@@ -38,10 +39,17 @@ export function PublishModal({ onClose }: { onClose: () => void }) {
         </>
       }
     >
-      <SetlistPoster name={state.setlistName.trim()} author={state.nickname.trim()} songIds={state.songIds} />
+      <SetlistPoster
+        name={state.setlistName.trim()}
+        author={state.nickname.trim()}
+        songIds={state.songIds}
+        openers={state.openers}
+        socialNetwork={state.socialNetwork && HANDLE_RE.test(state.socialHandle) ? state.socialNetwork : null}
+        socialHandle={state.socialHandle}
+      />
       <p style={{ margin: '12px 0 0', fontSize: 12.5, color: 'var(--c-steel)' }}>
         {mode === 'supabase'
-          ? 'Al publicar, tu setlist y tu nickname son visibles para todos. Usá un nickname que no revele tu identidad.'
+          ? 'Al publicar, tu setlist, tu nickname y la red social que elegiste son visibles para todos. Tu email no se muestra.'
           : 'Publicación de demostración: el setlist se agrega a la comunidad sólo en esta sesión del navegador.'}
       </p>
     </Modal>

@@ -18,10 +18,10 @@ export function Hero() {
     <section id="countdown" className="hero" aria-labelledby="hero-title">
       <div className="hero-media">
         <img
-          src={imgSrc('hero-fire', 1280)}
-          srcSet={imgSrcSet('hero-fire')}
+          src={imgSrc('trio-red', 1280)}
+          srcSet={imgSrcSet('trio-red')}
           sizes="100vw"
-          alt="BABYMETAL en vivo con columnas de fuego sobre el escenario"
+          alt="BABYMETAL en vivo: las tres integrantes de frente sobre el escenario"
           fetchPriority="high"
           decoding="async"
         />

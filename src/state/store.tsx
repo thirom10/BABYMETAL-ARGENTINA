@@ -1,8 +1,11 @@
 import { createContext, useCallback, useContext, useEffect, useMemo, useReducer, useRef, type ReactNode } from 'react';
+import { HANDLE_RE } from '../config/social';
 import { DEFAULT_SETLIST } from '../data/songs';
+import { loadDraft, saveDraft } from '../lib/draft';
 import { friendlyError } from '../services/errors';
 import { setlistRepository } from '../services/setlistRepository';
-import type { CommunitySetlist, Ranking, ReactionKind } from '../types';
+import type { Account, CommunitySetlist, Ranking, ReactionKind, SocialNetwork } from '../types';
+import { useAuth } from './auth';
 
 /* ------------------------------------------------------------------ */
 /* State                                                              */
@@ -21,9 +24,14 @@ interface State {
   nickname: string;
   setlistName: string;
   songIds: string[];
+  openers: string[];
+  socialNetwork: SocialNetwork | '';
+  socialHandle: string;
   builderTab: BuilderTab;
   community: CommunitySetlist[];
   ranking: Ranking;
+  /** Data of the signed-in account (null if signed out). */
+  account: Account | null;
   status: LoadStatus;
   toasts: Toast[];
   /** id of the setlist most recently published by this visitor (for highlight). */
@@ -33,6 +41,8 @@ interface State {
 type Action =
   | { type: 'nickname'; value: string }
   | { type: 'setlistName'; value: string }
+  | { type: 'openers'; value: string[] }
+  | { type: 'social'; network: SocialNetwork | ''; handle: string }
   | { type: 'add'; id: string }
   | { type: 'remove'; id: string }
   | { type: 'move'; from: number; to: number }
@@ -42,25 +52,34 @@ type Action =
   | { type: 'status'; status: LoadStatus }
   | { type: 'loaded'; community: CommunitySetlist[]; ranking: Ranking }
   | { type: 'ranking'; ranking: Ranking }
+  | { type: 'account'; account: Account | null }
   | { type: 'copyBase'; setlist: CommunitySetlist }
   | { type: 'published'; setlist: CommunitySetlist }
+  | { type: 'removed'; id: string }
   | { type: 'setReaction'; id: string; kind: ReactionKind; active: boolean }
   | { type: 'toast'; toast: Toast }
   | { type: 'dismissToast'; id: number };
 
 export const MAX_SONGS = 25;
 
-const initialState = (): State => ({
-  nickname: '',
-  setlistName: '',
-  songIds: [...DEFAULT_SETLIST],
-  builderTab: 'songs',
-  community: [],
-  ranking: { total: 0, rows: [] },
-  status: 'loading',
-  toasts: [],
-  lastPublishedId: null,
-});
+const initialState = (): State => {
+  const draft = loadDraft();
+  return {
+    nickname: draft?.nickname ?? '',
+    setlistName: draft?.setlistName ?? '',
+    songIds: draft && draft.songIds.length > 0 ? draft.songIds : [...DEFAULT_SETLIST],
+    openers: draft?.openers ?? [],
+    socialNetwork: draft?.socialNetwork ?? '',
+    socialHandle: draft?.socialHandle ?? '',
+    builderTab: 'songs',
+    community: [],
+    ranking: { total: 0, rows: [] },
+    account: null,
+    status: 'loading',
+    toasts: [],
+    lastPublishedId: null,
+  };
+};
 
 function reducer(state: State, action: Action): State {
   switch (action.type) {
@@ -68,6 +87,10 @@ function reducer(state: State, action: Action): State {
       return { ...state, nickname: action.value };
     case 'setlistName':
       return { ...state, setlistName: action.value };
+    case 'openers':
+      return { ...state, openers: action.value };
+    case 'social':
+      return { ...state, socialNetwork: action.network, socialHandle: action.handle };
     case 'add':
       if (state.songIds.includes(action.id) || state.songIds.length >= MAX_SONGS) return state;
       return { ...state, songIds: [...state.songIds, action.id] };
@@ -97,16 +120,36 @@ function reducer(state: State, action: Action): State {
     }
     case 'ranking':
       return { ...state, ranking: action.ranking };
+    case 'account': {
+      const a = action.account;
+      if (!a) return { ...state, account: null };
+      // Pre-fill what the visitor has not typed yet.
+      const noSocial = !state.socialNetwork && !state.socialHandle;
+      return {
+        ...state,
+        account: a,
+        nickname: state.nickname || a.nickname || '',
+        socialNetwork: noSocial ? (a.socialNetwork ?? '') : state.socialNetwork,
+        socialHandle: noSocial ? (a.socialHandle ?? '') : state.socialHandle,
+      };
+    }
     case 'copyBase':
       return {
         ...state,
         songIds: [...action.setlist.songIds],
+        openers: [...action.setlist.openers],
         setlistName: `${action.setlist.name} (remix)`.slice(0, 48),
         builderTab: 'setlist',
         community: state.community.map((s) => (s.id === action.setlist.id && !s.copied ? { ...s, copied: true, copies: s.copies + 1 } : s)),
       };
     case 'published':
       return { ...state, community: [action.setlist, ...state.community], lastPublishedId: action.setlist.id };
+    case 'removed':
+      return {
+        ...state,
+        community: state.community.filter((s) => s.id !== action.id),
+        lastPublishedId: state.lastPublishedId === action.id ? null : state.lastPublishedId,
+      };
     case 'setReaction':
       return {
         ...state,
@@ -139,6 +182,7 @@ interface Store {
   notify: (message: string, tone?: Toast['tone']) => void;
   reload: () => void;
   publish: () => Promise<CommunitySetlist>;
+  removeSetlist: (id: string) => Promise<void>;
   react: (id: string, kind: ReactionKind) => void;
   copyAsBase: (setlist: CommunitySetlist) => void;
 }
@@ -148,6 +192,8 @@ const StoreContext = createContext<Store | null>(null);
 let toastSeq = 0;
 
 export function StoreProvider({ children }: { children: ReactNode }) {
+  const auth = useAuth();
+  const userId = auth.user?.id ?? null;
   const [state, dispatch] = useReducer(reducer, undefined, initialState);
   const stateRef = useRef(state);
   stateRef.current = state;
@@ -158,6 +204,18 @@ export function StoreProvider({ children }: { children: ReactNode }) {
     dispatch({ type: 'toast', toast: { id, message, tone } });
     window.setTimeout(() => dispatch({ type: 'dismissToast', id }), 3600);
   }, []);
+
+  // Keep the draft in this browser (survives reloads and the trip to Google).
+  useEffect(() => {
+    saveDraft({
+      nickname: state.nickname,
+      setlistName: state.setlistName,
+      songIds: state.songIds,
+      openers: state.openers,
+      socialNetwork: state.socialNetwork,
+      socialHandle: state.socialHandle,
+    });
+  }, [state.nickname, state.setlistName, state.songIds, state.openers, state.socialNetwork, state.socialHandle]);
 
   const load = useCallback(async () => {
     dispatch({ type: 'status', status: 'loading' });
@@ -170,25 +228,56 @@ export function StoreProvider({ children }: { children: ReactNode }) {
     }
   }, []);
 
+  const loadAccount = useCallback(async () => {
+    try {
+      dispatch({ type: 'account', account: await setlistRepository.account() });
+    } catch (e) {
+      console.warn('[store] no se pudo cargar la cuenta:', e);
+    }
+  }, []);
+
+  // (Re)load once auth is known, and again whenever the account changes (login / logout).
   useEffect(() => {
+    if (auth.status !== 'ready') return;
     void load();
-  }, [load]);
+    if (userId) void loadAccount();
+    else dispatch({ type: 'account', account: null });
+  }, [auth.status, userId, load, loadAccount]);
 
   const publish = useCallback(async () => {
     const s = stateRef.current;
+    const handle = s.socialHandle.trim();
+    const hasSocial = Boolean(s.socialNetwork) && HANDLE_RE.test(handle);
     const created = await setlistRepository.publish({
       name: s.setlistName.trim() || 'Mi setlist soñado',
       author: s.nickname.trim() || 'Fan anónimo',
       songIds: s.songIds,
+      openers: s.openers,
+      socialNetwork: hasSocial && s.socialNetwork ? s.socialNetwork : null,
+      socialHandle: hasSocial ? handle : null,
     });
     dispatch({ type: 'published', setlist: created });
-    // Refresh the ranking in the background; failing here is not worth bothering the visitor.
+    // Background refreshes; failing here is not worth bothering the visitor.
     void setlistRepository
       .ranking()
       .then((ranking) => dispatch({ type: 'ranking', ranking }))
       .catch(() => {});
+    void loadAccount();
     return created;
-  }, []);
+  }, [loadAccount]);
+
+  const removeSetlist = useCallback(
+    async (id: string) => {
+      await setlistRepository.remove(id);
+      dispatch({ type: 'removed', id });
+      void setlistRepository
+        .ranking()
+        .then((ranking) => dispatch({ type: 'ranking', ranking }))
+        .catch(() => {});
+      void loadAccount();
+    },
+    [loadAccount],
+  );
 
   const react = useCallback(
     (id: string, kind: ReactionKind) => {
@@ -221,8 +310,8 @@ export function StoreProvider({ children }: { children: ReactNode }) {
   }, []);
 
   const value = useMemo<Store>(
-    () => ({ state, dispatch, mode: setlistRepository.mode, notify, reload: () => void load(), publish, react, copyAsBase }),
-    [state, notify, load, publish, react, copyAsBase],
+    () => ({ state, dispatch, mode: setlistRepository.mode, notify, reload: () => void load(), publish, removeSetlist, react, copyAsBase }),
+    [state, notify, load, publish, removeSetlist, react, copyAsBase],
   );
   return <StoreContext.Provider value={value}>{children}</StoreContext.Provider>;
 }

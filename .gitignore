@@ -197,3 +197,6 @@ desktop.ini
 
 # Local agent / tool settings
 .claude/
+
+# Foto con marca de agua de Getty Images (sin licencia): NO versionar ni publicar.
+public/images/hero-inicio.*

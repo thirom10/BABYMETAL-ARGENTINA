@@ -5,7 +5,10 @@
  */
 export type RepositoryErrorCode =
   | 'NOT_AUTHENTICATED'
+  | 'LOGIN_REQUIRED'
   | 'AUTH_FAILED'
+  | 'INVALID_OPENERS'
+  | 'INVALID_SOCIAL'
   | 'INVALID_NAME'
   | 'INVALID_AUTHOR'
   | 'INVALID_SONGS'
@@ -27,6 +30,9 @@ export class RepositoryError extends Error {
 
 const KNOWN: RepositoryErrorCode[] = [
   'NOT_AUTHENTICATED',
+  'LOGIN_REQUIRED',
+  'INVALID_OPENERS',
+  'INVALID_SOCIAL',
   'INVALID_NAME',
   'INVALID_AUTHOR',
   'INVALID_SONGS',
@@ -48,13 +54,16 @@ export function toRepositoryError(e: unknown): RepositoryError {
 
 const MESSAGES: Record<RepositoryErrorCode, string> = {
   NOT_AUTHENTICATED: 'No pudimos identificarte. Recargá la página e intentá de nuevo.',
-  AUTH_FAILED: 'No pudimos iniciar tu sesión anónima. Probá de nuevo en un rato.',
+  LOGIN_REQUIRED: 'Para publicar necesitás iniciar sesión con Google.',
+  AUTH_FAILED: 'No pudimos iniciar tu sesión. Probá de nuevo en un rato.',
+  INVALID_OPENERS: 'Los teloneros no son válidos (hasta 5, de máximo 30 caracteres cada uno).',
+  INVALID_SOCIAL: 'La red social no es válida: elegí la red y escribí tu usuario (letras, números, punto, guion).',
   INVALID_NAME: 'El nombre del setlist no es válido (1 a 48 caracteres).',
   INVALID_AUTHOR: 'El nickname no es válido (1 a 24 caracteres).',
   INVALID_SONGS: 'Un setlist necesita entre 5 y 25 canciones sin repetir.',
   UNKNOWN_SONG: 'Hay una canción que no existe en la biblioteca.',
   RATE_LIMIT: 'Publicaste muchos setlists seguidos. Esperá un rato y probá de nuevo.',
-  LIMIT_TOTAL: 'Llegaste al máximo de setlists publicados por persona.',
+  LIMIT_TOTAL: 'Llegaste al máximo de 3 setlists por cuenta. Borrá uno tuyo para publicar otro.',
   NOT_FOUND: 'Ese setlist ya no está disponible.',
   NETWORK: 'No hay conexión con el servidor. Revisá tu internet.',
   UNKNOWN: 'Algo salió mal. Probá de nuevo en un momento.',
