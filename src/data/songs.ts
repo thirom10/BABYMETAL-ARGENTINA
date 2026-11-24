@@ -30,6 +30,8 @@ const RAW: Array<[id: string, title: string, category: Category]> = [
   // FAN FAVORITES
   ['monochrome', 'Monochrome', 'FAN FAVORITES'],
   ['syncopation', 'Syncopation', 'FAN FAVORITES'],
+  ['bxmxc', 'BxMxC', 'FAN FAVORITES'],
+  ['algorism', 'Algorism', 'FAN FAVORITES'],
   ['pa-pa-ya', 'PA PA YA!!', 'FAN FAVORITES'],
   ['shanti-shanti-shanti', 'Shanti Shanti Shanti', 'FAN FAVORITES'],
   ['elevator-girl', 'Elevator Girl', 'FAN FAVORITES'],

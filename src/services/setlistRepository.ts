@@ -1,6 +1,5 @@
 import { isSupabaseConfigured } from '../config/env';
-import { MOCK_COMMUNITY } from '../data/community';
-import { PEOPLES_BASE_TOTAL, PEOPLES_BASE_VOTES } from '../data/peoples';
+import { buildRanking } from '../lib/ranking';
 import { ensureSession, getSupabase } from '../lib/supabase';
 import type { Account, CommunitySetlist, Ranking, ReactionKind, SocialNetwork } from '../types';
 import { RepositoryError, toRepositoryError } from './errors';
@@ -42,7 +41,8 @@ export interface SetlistRepository {
 /* ------------------------------------------------------------------ */
 
 function createMockRepository(): SetlistRepository {
-  const items: CommunitySetlist[] = MOCK_COMMUNITY.map((s) => ({ ...s, isDemo: true }));
+  // Demo mode (no Supabase): starts EMPTY. Only what the visitor publishes in this session appears.
+  const items: CommunitySetlist[] = [];
   const reactions = new Set<string>();
   let profile: Pick<Account, 'nickname' | 'socialNetwork' | 'socialHandle'> = { nickname: null, socialNetwork: null, socialHandle: null };
   const used = () => items.filter((s) => s.isOwn).length;
@@ -50,22 +50,7 @@ function createMockRepository(): SetlistRepository {
   return {
     mode: 'mock',
     list: async () => items.map((s) => ({ ...s })),
-    ranking: async () => {
-      const votes: Record<string, number> = { ...PEOPLES_BASE_VOTES };
-      const pos: Record<string, { sum: number; n: number }> = {};
-      for (const s of items) {
-        s.songIds.forEach((id, i) => {
-          votes[id] = (votes[id] ?? 0) + 1;
-          const p = (pos[id] ??= { sum: 0, n: 0 });
-          p.sum += s.songIds.length > 1 ? i / (s.songIds.length - 1) : 0.5;
-          p.n += 1;
-        });
-      }
-      const rows = Object.entries(votes)
-        .map(([id, picks]) => ({ id, picks, avgPos: pos[id] ? pos[id].sum / pos[id].n : 0.5 }))
-        .sort((a, b) => b.picks - a.picks);
-      return { total: PEOPLES_BASE_TOTAL + items.length, rows };
-    },
+    ranking: async () => buildRanking(items.map((s) => s.songIds)),
     account: async () => ({ ...profile, used: used(), max: MAX_SETLISTS_PER_ACCOUNT }),
     publish: async ({ name, author, songIds, openers, socialNetwork, socialHandle }) => {
       if (used() >= MAX_SETLISTS_PER_ACCOUNT) throw new RepositoryError('LIMIT_TOTAL');
@@ -121,7 +106,6 @@ interface FeedRow {
   liked: boolean;
   voted: boolean;
   is_own: boolean;
-  is_demo: boolean;
   openers: string[] | null;
   social_network: SocialNetwork | null;
   social_handle: string | null;
@@ -171,7 +155,6 @@ function createSupabaseRepository(): SetlistRepository {
         liked: r.liked,
         voted: r.voted,
         isOwn: r.is_own,
-        isDemo: r.is_demo,
       }));
     },
 

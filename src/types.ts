@@ -28,8 +28,6 @@ export interface CommunitySetlist {
   liked?: boolean;
   voted?: boolean;
   isOwn?: boolean;
-  /** Marks example setlists seeded by the project (not written by a visitor). */
-  isDemo?: boolean;
   /** Local flag: this visitor already used it as a base (avoids double counting). */
   copied?: boolean;
 }

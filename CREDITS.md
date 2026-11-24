@@ -20,3 +20,5 @@ Todas las fotografías provienen de [Wikimedia Commons](https://commons.wikimedi
 Las obras derivadas de imágenes CC BY-SA se distribuyen bajo la misma licencia CC BY-SA 4.0.
 
 Nota: la foto principal de la portada es `trio-red` (Selbymay, CC BY 4.0, ver tabla). No se usa ninguna imagen de Getty Images ni con marca de agua.
+
+Datos de la gira 2026 ("El setlist de la gente"): setlists reales relevados de [setlist.fm](https://www.setlist.fm/setlists/babymetal-5bd19f80.html) el 24/11/2026; cada show enlaza a su página original en `src/data/tourShows.ts`.

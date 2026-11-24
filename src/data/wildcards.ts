@@ -1,8 +1,6 @@
-/** Songs fans dream of hearing. NOT confirmed for the show. Wish counts are demo values. */
-export const WILDCARDS: Array<{ songId: string; wishes: number; note: string }> = [
-  { songId: 'arkadia', wishes: 932, note: 'El himno épico que todos quieren cantar a coro.' },
-  { songId: 'ijime-dame-zettai', wishes: 781, note: 'Un clásico de culto que rara vez aparece.' },
-  { songId: 'karate', wishes: 664, note: 'Puños arriba. Arena entera en silencio… y explosión.' },
-  { songId: 'distortion', wishes: 590, note: 'Oscura, rápida, perfecta para un pogo infinito.' },
-  { songId: 'doki-doki-morning', wishes: 423, note: 'La sorpresa nostálgica que nadie espera.' },
-];
+/**
+ * Songs fans dream of hearing. NOT confirmed for the show.
+ * No counters live here: the cards show REAL numbers (tour shows from setlist.fm
+ * and community setlists), computed at runtime.
+ */
+export const WILDCARDS: string[] = ['arkadia', 'ijime-dame-zettai', 'karate', 'distortion', 'doki-doki-morning'];

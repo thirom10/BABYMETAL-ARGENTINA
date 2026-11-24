@@ -172,3 +172,41 @@
     border-color: rgba(227, 38, 54, 0.4);
   }
 }
+
+.wc-facts {
+  flex: 1;
+  display: grid;
+  align-content: start;
+  gap: 8px;
+  margin: 6px 0 0;
+}
+
+.wc-facts div {
+  display: grid;
+  gap: 1px;
+}
+
+.wc-facts dt {
+  font-family: var(--f-label);
+  font-weight: 700;
+  font-size: 10.5px;
+  letter-spacing: 0.2em;
+  color: var(--c-gold);
+}
+
+.wc-facts dd {
+  margin: 0;
+  font-size: 13.5px;
+  color: var(--c-white);
+}
+
+.wc-add-btn {
+  width: 100%;
+  margin-top: 8px;
+}
+
+.wc-add-btn:disabled {
+  opacity: 1;
+  color: var(--c-red-hot);
+  border-color: rgba(227, 38, 54, 0.5);
+}

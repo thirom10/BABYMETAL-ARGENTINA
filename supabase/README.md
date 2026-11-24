@@ -8,9 +8,11 @@ compartidos, con login de Google para publicar.
 
 1. `migrations/0001_init.sql` → Run.
 2. `migrations/0002_accounts_socials_openers.sql` → Run (cuentas reales, tope de 3, red social, teloneros).
-3. `seed.sql` → Run (opcional: 6 setlists de ejemplo marcados como `EJEMPLO`).
+3. `migrations/0003_real_data_only.sql` → Run (**borra los setlists de ejemplo**, quita sus columnas y suma las
+   canciones Algorism y BxMxC al catálogo).
 
-Todos son idempotentes. Si ya corriste el 0001 y el seed, sólo falta el 0002.
+Todos son idempotentes. En una base nueva no hay datos de ejemplo: la comunidad arranca vacía y sólo muestra
+setlists publicados por personas reales.
 
 ## 2. Authentication
 
@@ -78,6 +80,6 @@ Dar like o votar no pide cuenta: usa una sesión anónima invisible (1 por perso
 - **Agregar una canción**: en `src/data/songs.ts` **y** en la tabla `songs` (migración nueva con un `insert`).
 - **Cambiar el tope de 3**: está en `publish_setlist` y `my_account` (migración nueva) y en
   `MAX_SETLISTS_PER_ACCOUNT` de `src/services/setlistRepository.ts` (sólo para el modo demo).
-- **Quitar los ejemplos**: `delete from public.setlists where is_demo;`
 - **Probar la configuración**: `npm run smoke:supabase` (no publica nada visible; deja un usuario anónimo de prueba).
+- **Sin datos inventados**: los contadores (likes, votos, copias) son filas reales; no hay columnas de "base" ni ejemplos.
 - **Más protección contra abuso**: CAPTCHA en Auth → Attack Protection (Cloudflare Turnstile).

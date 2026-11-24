@@ -267,3 +267,99 @@
     height: 640px;
   }
 }
+
+/* ---- source selector + notes ---- */
+.ps-sources {
+  margin-bottom: 8px;
+}
+
+.ps-source-note {
+  margin: 0 0 14px;
+  max-width: 72ch;
+  font-size: 13px;
+  line-height: 1.45;
+  color: var(--c-steel);
+}
+
+.ps-source-note a,
+.ps-shows a {
+  text-decoration: underline;
+  text-decoration-color: rgba(227, 38, 54, 0.7);
+  text-underline-offset: 3px;
+}
+
+.ps-source-note a:hover,
+.ps-shows a:hover {
+  color: var(--c-white);
+}
+
+.ps-shows {
+  margin-top: 16px;
+  font-size: 13px;
+  color: var(--c-steel);
+}
+
+.ps-shows summary {
+  cursor: pointer;
+  padding: 6px 0;
+  font-family: var(--f-label);
+  font-weight: 600;
+  font-size: 12px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+.ps-shows ul {
+  margin: 6px 0 0;
+  padding-left: 16px;
+  display: grid;
+  gap: 4px;
+}
+
+/* ---- source selector + notes ---- */
+.ps-sources {
+  margin-bottom: 8px;
+}
+
+.ps-source-note {
+  margin: 0 0 14px;
+  max-width: 72ch;
+  font-size: 13px;
+  line-height: 1.45;
+  color: var(--c-steel);
+}
+
+.ps-source-note a,
+.ps-shows a {
+  text-decoration: underline;
+  text-decoration-color: rgba(227, 38, 54, 0.7);
+  text-underline-offset: 3px;
+}
+
+.ps-source-note a:hover,
+.ps-shows a:hover {
+  color: var(--c-white);
+}
+
+.ps-shows {
+  margin-top: 16px;
+  font-size: 13px;
+  color: var(--c-steel);
+}
+
+.ps-shows summary {
+  cursor: pointer;
+  padding: 6px 0;
+  font-family: var(--f-label);
+  font-weight: 600;
+  font-size: 12px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+.ps-shows ul {
+  margin: 6px 0 0;
+  padding-left: 16px;
+  display: grid;
+  gap: 4px;
+}

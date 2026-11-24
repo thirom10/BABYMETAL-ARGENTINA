@@ -13,10 +13,10 @@ Experiencia web creada **por fans** para el concierto de BABYMETAL en Buenos Air
 |---|---|
 | **Countdown** | Hero cinematográfico + cuenta regresiva en vivo a las 21:00 (UTC-3). |
 | **Kitsune Radio** | Reproduce videos oficiales de BABYMETAL con la YouTube IFrame Player API (modo privacidad mejorada, se carga recién al dar play). Mini reproductor desplegable con swipe en mobile, panel flotante en desktop. Playlist en `src/data/radio.ts`; ajuste de reproducción minimizada en `src/config/radio.ts`. |
-| **The People's Setlist** | Ranking de canciones más elegidas (votos, %, barras) + "setlist promedio" ordenado por la posición promedio que eligen los fans. Se recalcula al publicar. |
+| **El setlist de la gente** | Dos vistas: **Setlist promedio** (primera) y **Ranking**, con dos fuentes reales: los setlists publicados por fans en el sitio y los últimos shows de la gira 2026 (datos de [setlist.fm](https://www.setlist.fm/setlists/babymetal-5bd19f80.html), en `src/data/tourShows.ts`). |
 | **Crear mi setlist** | Nickname, nombre, búsqueda, filtros por categoría, agregar / quitar / reordenar (botones + drag & drop en desktop), marcas de apertura (BABYMETAL DEATH) y cierre (ROAD OF RESISTANCE), aviso discreto si se cambian. Mobile: pestañas `CANCIONES` / `MI SETLIST` y barra inferior fija. |
 | **Publicación** | Vista previa tipo póster → confirmar → notificación → aparece primero en la comunidad. |
-| **Comunidad** | Sólo setlists de fans: likes, votos, ver completo, "usar de base", orden por populares / recientes / votados. |
+| **Comunidad** | Sólo setlists reales de fans: likes, votos, ver completo, **compartir** (imagen de la card + link para armar el propio), usar de base, borrar los propios. |
 | **Wildcard tracks** | Canciones sorpresa deseadas (no confirmadas) con "yo también" y atajo para sumarlas al setlist. |
 
 El estado de la interfaz es local (React `useReducer` + Context). Los datos de la comunidad vienen de `setlistRepository`:

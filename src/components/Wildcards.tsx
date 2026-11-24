@@ -1,15 +1,21 @@
-import { useState } from 'react';
+import { useMemo } from 'react';
 import { imgSrc, imgSrcSet } from '../data/images';
 import { songTitle } from '../data/songs';
+import { TOUR_SHOWS } from '../data/tourShows';
 import { WILDCARDS } from '../data/wildcards';
-import { formatNumber } from '../lib/format';
+import { buildRanking } from '../lib/ranking';
 import { MAX_SONGS, useStore } from '../state/store';
 import { Icon } from './Icon';
 import './Wildcards.css';
 
+const TOUR_RANKING = buildRanking(TOUR_SHOWS.map((s) => s.songIds));
+
 export function Wildcards() {
   const { state, dispatch, notify } = useStore();
-  const [wished, setWished] = useState<Record<string, boolean>>({});
+
+  // Real numbers only: how many community setlists include each song, and how many real tour shows played it.
+  const communityPicks = useMemo(() => new Map(state.ranking.rows.map((r) => [r.id, r.picks])), [state.ranking]);
+  const tourPicks = useMemo(() => new Map(TOUR_RANKING.rows.map((r) => [r.id, r.picks])), []);
 
   const add = (id: string) => {
     if (state.songIds.includes(id)) {
@@ -35,32 +41,38 @@ export function Wildcards() {
           <h2 id="wc-title" className="title">
             ¿Y si <span className="wc-red">suenan</span>…?
           </h2>
-          <p className="lede">Las canciones sorpresa que la comunidad sueña escuchar. No están confirmadas: son deseos de fans.</p>
+          <p className="lede">
+            Canciones sorpresa que los fans sueñan escuchar. No están confirmadas para Buenos Aires: miramos si sonaron en los últimos {TOUR_SHOWS.length} shows de la gira y en cuántos setlists de la
+            comunidad aparecen.
+          </p>
         </div>
 
-        <ul className="wc-track" aria-label="Canciones sorpresa deseadas">
-          {WILDCARDS.map((w, i) => {
-            const on = !!wished[w.songId];
-            const inSet = state.songIds.includes(w.songId);
+        <ul className="wc-track" aria-label="Canciones sorpresa">
+          {WILDCARDS.map((id, i) => {
+            const inSet = state.songIds.includes(id);
+            const played = tourPicks.get(id) ?? 0;
+            const picks = communityPicks.get(id) ?? 0;
             return (
-              <li key={w.songId} className="wc-card" style={{ animationDelay: `${i * 80}ms` }}>
+              <li key={id} className="wc-card" style={{ animationDelay: `${i * 80}ms` }}>
                 <span className="wc-glyph" aria-hidden="true">
                   ?
                 </span>
                 <span className="wc-num">WILDCARD 0{i + 1}</span>
-                <h3 className="wc-name">{songTitle(w.songId)}</h3>
-                <p className="wc-note">{w.note}</p>
-                <span className="wc-wishes">
-                  <Icon name="spark" size={13} /> {formatNumber(w.wishes + (on ? 1 : 0))} fans la piden
-                </span>
-                <div className="wc-actions">
-                  <button className={`btn btn-sm ${on ? 'btn-primary' : 'btn-ghost'}`} onClick={() => setWished((x) => ({ ...x, [w.songId]: !on }))} aria-pressed={on}>
-                    {on ? 'LA PEDISTE' : 'YO TAMBIÉN'}
-                  </button>
-                  <button className="icon-btn wc-add" onClick={() => add(w.songId)} aria-label={`Agregar ${songTitle(w.songId)} a mi setlist`} disabled={inSet}>
-                    <Icon name={inSet ? 'check' : 'plus'} size={18} />
-                  </button>
-                </div>
+                <h3 className="wc-name">{songTitle(id)}</h3>
+                <dl className="wc-facts">
+                  <div>
+                    <dt>GIRA 2026</dt>
+                    <dd>{played === 0 ? `No sonó en los últimos ${TOUR_SHOWS.length} shows` : `Sonó en ${played} de ${TOUR_SHOWS.length} shows`}</dd>
+                  </div>
+                  <div>
+                    <dt>COMUNIDAD</dt>
+                    <dd>{picks === 0 ? 'Todavía en ningún setlist' : `En ${picks} ${picks === 1 ? 'setlist' : 'setlists'}`}</dd>
+                  </div>
+                </dl>
+                <button className={`btn btn-sm ${inSet ? 'btn-ghost' : 'btn-primary'} wc-add-btn`} onClick={() => add(id)} disabled={inSet}>
+                  <Icon name={inSet ? 'check' : 'plus'} size={16} />
+                  {inSet ? 'EN TU SETLIST' : 'AGREGAR A MI SETLIST'}
+                </button>
               </li>
             );
           })}

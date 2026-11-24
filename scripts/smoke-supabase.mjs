@@ -32,7 +32,10 @@ const check = (name, ok, extra = '') => {
 console.log('== Sin sesión (rol anon) ==');
 const list = await sb.rpc('list_setlists');
 check('list_setlists responde', !list.error, list.error?.message);
-check('hay setlists (¿corriste seed.sql?)', (list.data?.length ?? 0) > 0, `${list.data?.length ?? 0} setlists`);
+console.log(`  --   hay ${list.data?.length ?? 0} setlist(s) publicados (solo reales: ya no existen los de ejemplo)`);
+if (list.data?.[0]) {
+  check('ya no hay columnas de datos de ejemplo (¿corriste 0003?)', !('is_demo' in list.data[0]), 'is_demo' in list.data[0] ? 'todavía existe is_demo' : '');
+}
 check('list_setlists trae teloneros y red social (¿corriste 0002?)', Array.isArray(list.data?.[0]?.openers), list.error?.message);
 
 const profilesDirect = await sb.from('profiles').select('*').limit(1);
@@ -107,8 +110,9 @@ if (!auth.error) {
   const delFake = await sb.rpc('delete_setlist', { p_setlist_id: '00000000-0000-4000-8000-0000000000ff' });
   check('borrar un setlist ajeno / inexistente falla', delFake.error?.message?.includes('NOT_FOUND'), delFake.error?.message);
 
-  const delDemo = await sb.rpc('delete_setlist', { p_setlist_id: '00000000-0000-4000-8000-000000000001' });
-  check('no se pueden borrar los setlists de ejemplo', delDemo.error?.message?.includes('NOT_FOUND'), delDemo.error?.message);
+  // 0003 adds Algorism and BxMxC to the catalog: with them the input is valid and only the login is missing.
+  const tourSongs = await sb.rpc('publish_setlist', { ...base, p_song_ids: ['algorism', 'bxmxc', 'karate', 'monochrome', 'ratatata'] });
+  check('el catálogo incluye Algorism y BxMxC (¿corriste 0003?)', tourSongs.error?.message?.includes('LOGIN_REQUIRED'), tourSongs.error?.message);
 
   const first = list.data?.[0]?.id;
   if (first) {

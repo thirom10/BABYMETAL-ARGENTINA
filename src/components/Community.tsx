@@ -10,7 +10,7 @@ import { Icon } from './Icon';
 import { friendlyError } from '../services/errors';
 import { Modal } from './Modal';
 import { OpenersLine, SocialLink } from './SocialLink';
-import { SetlistPoster } from './SetlistPoster';
+import { ViewSetlistModal } from './ViewSetlistModal';
 import './Community.css';
 
 const SORTS: Array<{ id: CommunitySort; label: string }> = [
@@ -71,7 +71,6 @@ function SetlistCard({
 
       <div className="cc-tags">
         {s.isOwn && <span className="cc-tag is-own">TU SETLIST</span>}
-        {s.isDemo && <span className="cc-tag">EJEMPLO</span>}
         {classicOpen && classicClose && <span className="cc-tag">ESTRUCTURA CLÁSICA</span>}
         {!classicOpen && <span className="cc-tag is-alt">APERTURA ALTERNATIVA</span>}
       </div>
@@ -148,7 +147,6 @@ export function Community() {
             Los setlists <span className="cm-red">de los fans</span>
           </h2>
           <p className="lede">Cada fan imagina su concierto perfecto. Votá los que más te gustan o usalos como base para armar el tuyo.</p>
-          {state.community.some((s) => s.isDemo) && <span className="demo-tag">INCLUYE SETLISTS DE EJEMPLO</span>}
         </div>
 
         <div className="chip-row cm-sorts" role="group" aria-label="Ordenar setlists">
@@ -192,32 +190,7 @@ export function Community() {
         )}
       </div>
 
-      {viewing && (
-        <Modal
-          title="SETLIST COMPLETO"
-          onClose={() => setViewing(null)}
-          footer={
-            <>
-              <button className="btn btn-ghost" onClick={() => setViewing(null)}>
-                CERRAR
-              </button>
-              <button className="btn btn-primary" onClick={() => copy(viewing)}>
-                USAR COMO BASE
-              </button>
-            </>
-          }
-        >
-          <SetlistPoster
-            name={viewing.name}
-            author={`@${viewing.author}`}
-            songIds={viewing.songIds}
-            openers={viewing.openers}
-            socialNetwork={viewing.socialNetwork}
-            socialHandle={viewing.socialHandle}
-            meta={`${formatDate(viewing.createdAt)} · ♥ ${formatNumber(state.community.find((c) => c.id === viewing.id)?.likes ?? viewing.likes)}`}
-          />
-        </Modal>
-      )}
+      {viewing && <ViewSetlistModal setlist={viewing} onClose={() => setViewing(null)} onCopy={copy} />}
 
       {deleting && (
         <Modal

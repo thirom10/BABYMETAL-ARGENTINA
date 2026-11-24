@@ -7,7 +7,7 @@ Proyecto: **BABYMETAL ARGENTINA — THE COUNTDOWN**. Sitio de fans (no oficial) 
 
 - Vite 8 + React 19 + TypeScript (strict). Sin framework de UI: CSS plano por componente.
 - Estado: `useReducer` + Context (`src/state/store.tsx`, `src/state/radio.tsx`).
-- Sin backend en la etapa 1. Todo dato es mock (`src/data/*`).
+- Backend: Supabase (ver sección más abajo). Sin las variables de entorno el sitio corre en modo demo, **vacío** (sin datos de ejemplo).
 
 ## Comandos
 
@@ -33,7 +33,11 @@ npm run build      # incluye `tsc -b`; debe pasar sin errores antes de commitear
 - Tokens de diseño en `src/styles/base.css` (`--c-*`, `--f-*`). Paleta: `#09090D`, `#E32636`, `#74111E`.
 - Un componente = `Componente.tsx` + `Componente.css` en `src/components/`.
 - `base.css` se importa antes que `App` en `main.tsx` para que los estilos de componentes ganen.
-- Textos de UI en español rioplatense. Mantener visibles los avisos "FAN PROJECT" y "datos de demostración".
+- Textos de UI en español rioplatense. Mantener visible el aviso "FAN PROJECT" (sitio no oficial).
+- **Datos reales o nada**: no hardcodear publicaciones, votos ni contadores inventados. Las cifras salen de la base de datos
+  o de `src/data/tourShows.ts` (setlists reales de setlist.fm, con fuente y fecha de relevamiento; agregar shows nuevos ahí).
+- Compartir: la imagen de la card se dibuja con Canvas en `src/lib/shareCard.ts` (sin librerías) y se comparte con la Web Share API
+  (`src/hooks/useShareCard.ts`); en escritorio hay descargar / copiar link / WhatsApp.
 - Apertura/cierre habituales: `OPENER_ID` / `CLOSER_ID` en `src/config/event.ts`. Nunca bloquear al usuario
   por cambiarlos; sólo mostrar un aviso discreto.
 - No inventar títulos de canciones. La biblioteca está en `src/data/songs.ts` (categorías = curaduría de fans).
@@ -41,7 +45,7 @@ npm run build      # incluye `tsc -b`; debe pasar sin errores antes de commitear
 
 ## Supabase (integrado)
 
-- Esquema y funciones: `supabase/migrations/0001_init.sql` y `0002_accounts_socials_openers.sql`; ejemplos: `supabase/seed.sql`;
+- Esquema y funciones: `supabase/migrations/0001_init.sql`, `0002_accounts_socials_openers.sql` y `0003_real_data_only.sql`;
   guía (incluye Google OAuth): `supabase/README.md`.
 - Las tablas tienen RLS **sin policies**; el navegador sólo llama funciones `SECURITY DEFINER`. Cualquier cambio nuevo:
   migración numerada, RLS activado, `revoke` + `grant execute` explícitos.
