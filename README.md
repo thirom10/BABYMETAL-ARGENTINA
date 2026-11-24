@@ -94,6 +94,24 @@ CC BY / CC BY-SA. Los créditos son obligatorios y se muestran en el footer ("Cr
 Para regenerar los WebP: descargá los originales a `assets-src/<slug>.jpg` (carpeta ignorada por git) y corré
 `npm run images`.
 
+## Despliegue en Vercel
+
+1. En [vercel.com](https://vercel.com) -> **Add New -> Project** -> importar `thirom10/BABYMETAL-ARGENTINA`.
+2. Framework: **Vite** (se detecta solo). `vercel.json` ya define build, carpeta de salida, cabeceras y caché.
+3. **Environment Variables** (Production y Preview):
+   - `VITE_PUBLIC_SUPABASE_URL` = `https://<project-id>.supabase.co`
+   - `VITE_PUBLIC_SUPABASE_ANON_KEY` = clave anon / publishable (nunca la `secret` / `service_role`)
+4. **Deploy**. Con la URL que asigne Vercel, agregar `VITE_PUBLIC_SITE_URL` y volver a desplegar
+   (Vite incrusta las variables al compilar: cambiarlas requiere un nuevo deploy).
+5. Cada push a `main` publica solo; las ramas y PRs generan URLs de vista previa.
+
+### Cabeceras de seguridad (`vercel.json`)
+
+Activas: `X-Content-Type-Options`, `X-Frame-Options`, `Referrer-Policy`, `Permissions-Policy`, HSTS.
+La **Content-Security-Policy está en modo `Report-Only`**: no bloquea nada, sólo avisa en la consola del navegador.
+Cuando el sitio esté publicado, abrirlo con las DevTools (F12 -> Console), usar la radio, publicar y dar like:
+si no aparece ningún mensaje `[Report Only] Refused to ...`, cambiar la clave a `Content-Security-Policy` para que se aplique.
+
 ## Supabase
 
 Integración lista. Pasos de puesta en marcha, modelo de seguridad y mantenimiento: [`supabase/README.md`](supabase/README.md).

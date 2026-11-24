@@ -49,6 +49,11 @@ npm run build      # incluye `tsc -b`; debe pasar sin errores antes de commitear
 - Sesión anónima perezosa (`ensureSession` en `src/lib/supabase.ts`): sólo al escribir, nunca al navegar.
 - Si agregás canciones, hay que agregarlas también a la tabla `songs` (migración nueva).
 
+## Despliegue
+
+- Vercel (ver README). `vercel.json` define cabeceras y caché. Si se agrega un servicio externo nuevo (API, fuentes, embeds),
+  actualizar `connect-src` / `script-src` / `frame-src` de la CSP.
+
 ## Checklist de QA antes de terminar una tarea
 
 - `npm run build` sin errores.
