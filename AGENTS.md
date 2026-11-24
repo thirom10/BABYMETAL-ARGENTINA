@@ -39,26 +39,15 @@ npm run build      # incluye `tsc -b`; debe pasar sin errores antes de commitear
 - No inventar títulos de canciones. La biblioteca está en `src/data/songs.ts` (categorías = curaduría de fans).
 - Fotos: sólo con licencia libre y crédito en `src/data/credits.ts` + `CREDITS.md`.
 
-## Integración futura con Supabase
+## Supabase (integrado)
 
-La UI habla sólo con `setlistRepository` (`src/services/setlistRepository.ts`):
-
-```ts
-interface SetlistRepository {
-  list(): CommunitySetlist[];
-  publish(input: PublishInput): CommunitySetlist;
-}
-```
-
-Plan sugerido:
-
-1. Volver la interfaz asíncrona (`Promise`) y adaptar `StoreProvider` (estado de carga/errores).
-2. Crear `createSupabaseRepository()` usando `publicEnv.supabaseUrl` / `publicEnv.supabaseAnonKey`;
-   elegir implementación con `isSupabaseConfigured` (si no hay config, seguir con el mock).
-3. Tablas sugeridas: `setlists (id, name, author, song_ids text[], created_at)`, `setlist_likes`,
-   `setlist_votes` con unicidad por usuario/sesión. Contadores vía vista o RPC.
-4. Mover el cálculo de "The People's Setlist" a una vista SQL.
-5. Validar en el servidor: largo de nombre/nickname, 5–25 canciones, ids existentes, sin duplicados.
+- Esquema y funciones: `supabase/migrations/0001_init.sql`; ejemplos: `supabase/seed.sql`; guía: `supabase/README.md`.
+- Las tablas tienen RLS **sin policies**; el navegador sólo llama funciones `SECURITY DEFINER` (ver README de supabase).
+  Cualquier cambio nuevo: nueva migración numerada, RLS activado, `revoke` + `grant execute` explícitos.
+- La UI sólo habla con `setlistRepository` (`src/services/setlistRepository.ts`), asíncrono, con implementación
+  mock (sin env) y Supabase (con env). Errores normalizados en `src/services/errors.ts`.
+- Sesión anónima perezosa (`ensureSession` en `src/lib/supabase.ts`): sólo al escribir, nunca al navegar.
+- Si agregás canciones, hay que agregarlas también a la tabla `songs` (migración nueva).
 
 ## Checklist de QA antes de terminar una tarea
 

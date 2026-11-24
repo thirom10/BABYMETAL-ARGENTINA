@@ -1,16 +1,26 @@
-import { useStore } from '../state/store';
+import { useState } from 'react';
 import { scrollToId } from '../lib/format';
+import { friendlyError } from '../services/errors';
+import { useStore } from '../state/store';
 import { Modal } from './Modal';
 import { SetlistPoster } from './SetlistPoster';
 
 export function PublishModal({ onClose }: { onClose: () => void }) {
-  const { state, publish, notify } = useStore();
+  const { state, publish, notify, mode } = useStore();
+  const [busy, setBusy] = useState(false);
 
-  const confirm = () => {
-    const created = publish();
-    onClose();
-    notify(`¡“${created.name}” ya está en la comunidad!`, 'success');
-    window.setTimeout(() => scrollToId('comunidad'), 250);
+  const confirm = async () => {
+    if (busy) return;
+    setBusy(true);
+    try {
+      const created = await publish();
+      onClose();
+      notify(`¡“${created.name}” ya está en la comunidad!`, 'success');
+      window.setTimeout(() => scrollToId('comunidad'), 250);
+    } catch (e) {
+      notify(friendlyError(e));
+      setBusy(false);
+    }
   };
 
   return (
@@ -19,18 +29,20 @@ export function PublishModal({ onClose }: { onClose: () => void }) {
       onClose={onClose}
       footer={
         <>
-          <button className="btn btn-ghost" onClick={onClose}>
+          <button className="btn btn-ghost" onClick={onClose} disabled={busy}>
             SEGUIR EDITANDO
           </button>
-          <button className="btn btn-primary" onClick={confirm}>
-            CONFIRMAR Y PUBLICAR
+          <button className="btn btn-primary" onClick={confirm} disabled={busy} aria-busy={busy}>
+            {busy ? 'PUBLICANDO…' : 'CONFIRMAR Y PUBLICAR'}
           </button>
         </>
       }
     >
       <SetlistPoster name={state.setlistName.trim()} author={state.nickname.trim()} songIds={state.songIds} />
       <p style={{ margin: '12px 0 0', fontSize: 12.5, color: 'var(--c-steel)' }}>
-        Publicación de demostración: el setlist se agrega a la comunidad sólo en esta sesión del navegador.
+        {mode === 'supabase'
+          ? 'Al publicar, tu setlist y tu nickname son visibles para todos. Usá un nickname que no revele tu identidad.'
+          : 'Publicación de demostración: el setlist se agrega a la comunidad sólo en esta sesión del navegador.'}
       </p>
     </Modal>
   );

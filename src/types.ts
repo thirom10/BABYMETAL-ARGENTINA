@@ -17,10 +17,14 @@ export interface CommunitySetlist {
   likes: number;
   votes: number;
   copies: number;
-  /** Local-only flags for the current visitor (demo). */
+  /** Flags for the current visitor. */
   liked?: boolean;
   voted?: boolean;
   isOwn?: boolean;
+  /** Marks example setlists seeded by the project (not written by a visitor). */
+  isDemo?: boolean;
+  /** Local flag: this visitor already used it as a base (avoids double counting). */
+  copied?: boolean;
 }
 
 export interface RadioTrack {
@@ -33,3 +37,18 @@ export interface RadioTrack {
 }
 
 export type CommunitySort = 'popular' | 'recent' | 'votes';
+
+export interface RankingRow {
+  id: string;
+  /** In how many setlists the song appears. */
+  picks: number;
+  /** Average position, 0 (opener) to 1 (closer). */
+  avgPos: number;
+}
+
+export interface Ranking {
+  total: number;
+  rows: RankingRow[];
+}
+
+export type ReactionKind = 'like' | 'vote';

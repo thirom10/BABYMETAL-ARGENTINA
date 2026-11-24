@@ -1,7 +1,6 @@
 import { useMemo, useState } from 'react';
 import { CLOSER_ID, OPENER_ID } from '../config/event';
 import { imgSrc, imgSrcSet } from '../data/images';
-import { PEOPLES_BASE_TOTAL, PEOPLES_BASE_VOTES } from '../data/peoples';
 import { songTitle } from '../data/songs';
 import { formatNumber } from '../lib/format';
 import { useStore } from '../state/store';
@@ -10,31 +9,22 @@ import './PeoplesSetlist.css';
 type View = 'ranking' | 'average';
 
 export function PeoplesSetlist() {
-  const { state } = useStore();
+  const { state, mode } = useStore();
   const [view, setView] = useState<View>('ranking');
   const [expanded, setExpanded] = useState(false);
 
   const { rows, total, average } = useMemo(() => {
-    const votes: Record<string, number> = { ...PEOPLES_BASE_VOTES };
-    const posSum: Record<string, { sum: number; n: number }> = {};
-    for (const s of state.community) {
-      s.songIds.forEach((id, i) => {
-        votes[id] = (votes[id] ?? 0) + 1;
-        const p = (posSum[id] ??= { sum: 0, n: 0 });
-        p.sum += s.songIds.length > 1 ? i / (s.songIds.length - 1) : 0;
-        p.n += 1;
-      });
-    }
-    const total = PEOPLES_BASE_TOTAL + state.community.length;
-    const rows = Object.entries(votes)
-      .map(([id, v]) => ({ id, votes: v, pct: Math.min(100, (v / total) * 100) }))
-      .sort((a, b) => b.votes - a.votes);
-    const average = rows
-      .slice(0, 14)
-      .map((r) => ({ ...r, pos: posSum[r.id] ? posSum[r.id].sum / posSum[r.id].n : 0.5 }))
-      .sort((a, b) => a.pos - b.pos);
+    const total = state.ranking.total;
+    const rows = state.ranking.rows.map((r) => ({
+      id: r.id,
+      votes: r.picks,
+      pct: total > 0 ? Math.min(100, (r.picks / total) * 100) : 0,
+      pos: r.avgPos,
+    }));
+    // "Average setlist": the 14 most picked songs, ordered by their average position.
+    const average = rows.slice(0, 14).sort((x, y) => x.pos - y.pos);
     return { rows, total, average };
-  }, [state.community]);
+  }, [state.ranking]);
 
   const list = view === 'ranking' ? rows.slice(0, expanded ? 20 : 10) : average;
   const max = rows[0]?.votes ?? 1;
@@ -64,7 +54,7 @@ export function PeoplesSetlist() {
               <strong>{rows.length}</strong>
               <span>canciones votadas</span>
             </div>
-            <span className="demo-tag">DATOS DE DEMOSTRACIÓN</span>
+            {mode === 'mock' && <span className="demo-tag">DATOS DE DEMOSTRACIÓN</span>}
           </div>
         </div>
 
@@ -79,6 +69,12 @@ export function PeoplesSetlist() {
 
         {view === 'average' && (
           <p className="ps-note">Las 14 canciones más votadas, ordenadas según la posición promedio que les dan los fans.</p>
+        )}
+
+        {rows.length === 0 && (
+          <p className="ps-note" role="status">
+            {state.status === 'loading' ? 'Cargando ranking…' : 'Todavía no hay setlists para armar el ranking.'}
+          </p>
         )}
 
         <ol

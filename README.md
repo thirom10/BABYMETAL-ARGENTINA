@@ -19,7 +19,10 @@ Experiencia web creada **por fans** para el concierto de BABYMETAL en Buenos Air
 | **Comunidad** | Sólo setlists de fans: likes, votos, ver completo, "usar de base", orden por populares / recientes / votados. |
 | **Wildcard tracks** | Canciones sorpresa deseadas (no confirmadas) con "yo también" y atajo para sumarlas al setlist. |
 
-Todo el estado es local (React `useReducer` + Context). No hay backend, cuentas ni persistencia.
+El estado de la interfaz es local (React `useReducer` + Context). Los datos de la comunidad vienen de `setlistRepository`:
+
+- **Con Supabase configurado** (variables `VITE_PUBLIC_SUPABASE_*`): datos reales y compartidos, con sesión anónima para likes/votos. Guía en [`supabase/README.md`](supabase/README.md).
+- **Sin configurar**: datos de demostración en memoria (nada persiste).
 
 ## Requisitos
 
@@ -91,14 +94,11 @@ CC BY / CC BY-SA. Los créditos son obligatorios y se muestran en el footer ("Cr
 Para regenerar los WebP: descargá los originales a `assets-src/<slug>.jpg` (carpeta ignorada por git) y corré
 `npm run images`.
 
-## Próximos pasos (etapa 2, con Codex + Supabase)
+## Supabase
 
-Ver [`AGENTS.md`](AGENTS.md). Resumen:
+Integración lista. Pasos de puesta en marcha, modelo de seguridad y mantenimiento: [`supabase/README.md`](supabase/README.md).
 
-1. Implementar `SetlistRepository` con Supabase (tabla `setlists`, `likes`, `votes`) con **RLS activado**.
-2. Reemplazar `setlistRepository` en `src/services/setlistRepository.ts`; la UI no necesita cambios grandes.
-3. Calcular "The People's Setlist" en el backend (vista o función) en lugar de `src/data/peoples.ts`.
-4. Autenticación opcional (magic link / OAuth) para likes y votos únicos.
+Pendiente a futuro: login opcional (magic link / Google), CAPTCHA, panel de moderación.
 
 ## Licencia del contenido
 

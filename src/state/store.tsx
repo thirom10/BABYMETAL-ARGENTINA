@@ -1,13 +1,15 @@
-import { createContext, useCallback, useContext, useMemo, useReducer, type ReactNode } from 'react';
-import type { CommunitySetlist } from '../types';
+import { createContext, useCallback, useContext, useEffect, useMemo, useReducer, useRef, type ReactNode } from 'react';
 import { DEFAULT_SETLIST } from '../data/songs';
+import { friendlyError } from '../services/errors';
 import { setlistRepository } from '../services/setlistRepository';
+import type { CommunitySetlist, Ranking, ReactionKind } from '../types';
 
 /* ------------------------------------------------------------------ */
 /* State                                                              */
 /* ------------------------------------------------------------------ */
 
 export type BuilderTab = 'songs' | 'setlist';
+export type LoadStatus = 'loading' | 'ready' | 'error';
 
 export interface Toast {
   id: number;
@@ -21,6 +23,8 @@ interface State {
   songIds: string[];
   builderTab: BuilderTab;
   community: CommunitySetlist[];
+  ranking: Ranking;
+  status: LoadStatus;
   toasts: Toast[];
   /** id of the setlist most recently published by this visitor (for highlight). */
   lastPublishedId: string | null;
@@ -35,10 +39,12 @@ type Action =
   | { type: 'reset' }
   | { type: 'clear' }
   | { type: 'tab'; tab: BuilderTab }
-  | { type: 'loadBase'; setlist: CommunitySetlist }
+  | { type: 'status'; status: LoadStatus }
+  | { type: 'loaded'; community: CommunitySetlist[]; ranking: Ranking }
+  | { type: 'ranking'; ranking: Ranking }
+  | { type: 'copyBase'; setlist: CommunitySetlist }
   | { type: 'published'; setlist: CommunitySetlist }
-  | { type: 'like'; id: string }
-  | { type: 'vote'; id: string }
+  | { type: 'setReaction'; id: string; kind: ReactionKind; active: boolean }
   | { type: 'toast'; toast: Toast }
   | { type: 'dismissToast'; id: number };
 
@@ -49,7 +55,9 @@ const initialState = (): State => ({
   setlistName: '',
   songIds: [...DEFAULT_SETLIST],
   builderTab: 'songs',
-  community: setlistRepository.list(),
+  community: [],
+  ranking: { total: 0, rows: [] },
+  status: 'loading',
   toasts: [],
   lastPublishedId: null,
 });
@@ -79,29 +87,36 @@ function reducer(state: State, action: Action): State {
       return { ...state, songIds: [] };
     case 'tab':
       return { ...state, builderTab: action.tab };
-    case 'loadBase':
+    case 'status':
+      return { ...state, status: action.status };
+    case 'loaded': {
+      // Keep anything this visitor published while the list was loading.
+      const known = new Set(action.community.map((s) => s.id));
+      const mine = state.community.filter((s) => s.isOwn && !known.has(s.id));
+      return { ...state, community: [...mine, ...action.community], ranking: action.ranking, status: 'ready' };
+    }
+    case 'ranking':
+      return { ...state, ranking: action.ranking };
+    case 'copyBase':
       return {
         ...state,
         songIds: [...action.setlist.songIds],
         setlistName: `${action.setlist.name} (remix)`.slice(0, 48),
         builderTab: 'setlist',
-        community: state.community.map((s) => (s.id === action.setlist.id ? { ...s, copies: s.copies + 1 } : s)),
+        community: state.community.map((s) => (s.id === action.setlist.id && !s.copied ? { ...s, copied: true, copies: s.copies + 1 } : s)),
       };
     case 'published':
       return { ...state, community: [action.setlist, ...state.community], lastPublishedId: action.setlist.id };
-    case 'like':
+    case 'setReaction':
       return {
         ...state,
-        community: state.community.map((s) =>
-          s.id === action.id ? { ...s, liked: !s.liked, likes: s.likes + (s.liked ? -1 : 1) } : s,
-        ),
-      };
-    case 'vote':
-      return {
-        ...state,
-        community: state.community.map((s) =>
-          s.id === action.id ? { ...s, voted: !s.voted, votes: s.votes + (s.voted ? -1 : 1) } : s,
-        ),
+        community: state.community.map((s) => {
+          if (s.id !== action.id) return s;
+          const key = action.kind === 'like' ? 'liked' : 'voted';
+          const count = action.kind === 'like' ? 'likes' : 'votes';
+          if (Boolean(s[key]) === action.active) return s;
+          return { ...s, [key]: action.active, [count]: s[count] + (action.active ? 1 : -1) };
+        }),
       };
     case 'toast':
       return { ...state, toasts: [...state.toasts.slice(-2), action.toast] };
@@ -119,8 +134,13 @@ function reducer(state: State, action: Action): State {
 interface Store {
   state: State;
   dispatch: React.Dispatch<Action>;
+  /** 'mock' = demo data in memory, 'supabase' = shared real data. */
+  mode: 'mock' | 'supabase';
   notify: (message: string, tone?: Toast['tone']) => void;
-  publish: () => CommunitySetlist;
+  reload: () => void;
+  publish: () => Promise<CommunitySetlist>;
+  react: (id: string, kind: ReactionKind) => void;
+  copyAsBase: (setlist: CommunitySetlist) => void;
 }
 
 const StoreContext = createContext<Store | null>(null);
@@ -129,6 +149,9 @@ let toastSeq = 0;
 
 export function StoreProvider({ children }: { children: ReactNode }) {
   const [state, dispatch] = useReducer(reducer, undefined, initialState);
+  const stateRef = useRef(state);
+  stateRef.current = state;
+  const pending = useRef(new Set<string>());
 
   const notify = useCallback((message: string, tone: Toast['tone'] = 'info') => {
     const id = ++toastSeq;
@@ -136,17 +159,71 @@ export function StoreProvider({ children }: { children: ReactNode }) {
     window.setTimeout(() => dispatch({ type: 'dismissToast', id }), 3600);
   }, []);
 
-  const publish = useCallback(() => {
-    const created = setlistRepository.publish({
-      name: state.setlistName.trim() || 'Mi setlist soñado',
-      author: state.nickname.trim() || 'Fan anónimo',
-      songIds: state.songIds,
+  const load = useCallback(async () => {
+    dispatch({ type: 'status', status: 'loading' });
+    try {
+      const [community, ranking] = await Promise.all([setlistRepository.list(), setlistRepository.ranking()]);
+      dispatch({ type: 'loaded', community, ranking });
+    } catch (e) {
+      console.warn('[store] no se pudo cargar la comunidad:', e);
+      dispatch({ type: 'status', status: 'error' });
+    }
+  }, []);
+
+  useEffect(() => {
+    void load();
+  }, [load]);
+
+  const publish = useCallback(async () => {
+    const s = stateRef.current;
+    const created = await setlistRepository.publish({
+      name: s.setlistName.trim() || 'Mi setlist soñado',
+      author: s.nickname.trim() || 'Fan anónimo',
+      songIds: s.songIds,
     });
     dispatch({ type: 'published', setlist: created });
+    // Refresh the ranking in the background; failing here is not worth bothering the visitor.
+    void setlistRepository
+      .ranking()
+      .then((ranking) => dispatch({ type: 'ranking', ranking }))
+      .catch(() => {});
     return created;
-  }, [state.setlistName, state.nickname, state.songIds]);
+  }, []);
 
-  const value = useMemo(() => ({ state, dispatch, notify, publish }), [state, notify, publish]);
+  const react = useCallback(
+    (id: string, kind: ReactionKind) => {
+      const key = `${kind}:${id}`;
+      if (pending.current.has(key)) return;
+      const current = stateRef.current.community.find((s) => s.id === id);
+      if (!current) return;
+      const want = !(kind === 'like' ? current.liked : current.voted);
+
+      pending.current.add(key);
+      dispatch({ type: 'setReaction', id, kind, active: want }); // optimistic
+      setlistRepository
+        .toggleReaction(id, kind)
+        .then((active) => {
+          if (active !== want) dispatch({ type: 'setReaction', id, kind, active });
+        })
+        .catch((e) => {
+          dispatch({ type: 'setReaction', id, kind, active: !want }); // revert
+          notify(friendlyError(e));
+        })
+        .finally(() => pending.current.delete(key));
+    },
+    [notify],
+  );
+
+  const copyAsBase = useCallback((setlist: CommunitySetlist) => {
+    dispatch({ type: 'copyBase', setlist });
+    // Best effort: the visitor already got their copy, the counter can fail silently.
+    void setlistRepository.registerCopy(setlist.id).catch(() => {});
+  }, []);
+
+  const value = useMemo<Store>(
+    () => ({ state, dispatch, mode: setlistRepository.mode, notify, reload: () => void load(), publish, react, copyAsBase }),
+    [state, notify, load, publish, react, copyAsBase],
+  );
   return <StoreContext.Provider value={value}>{children}</StoreContext.Provider>;
 }
 

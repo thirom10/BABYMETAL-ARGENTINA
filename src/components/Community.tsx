@@ -21,7 +21,7 @@ const PAGE_MOBILE = 4;
 const PAGE_DESKTOP = 6;
 
 function SetlistCard({ s, highlight, onView, onCopy }: { s: CommunitySetlist; highlight: boolean; onView: () => void; onCopy: () => void }) {
-  const { dispatch } = useStore();
+  const { react } = useStore();
   const preview = s.songIds.slice(0, 4);
   const rest = s.songIds.length - preview.length;
   const classicOpen = s.songIds[0] === OPENER_ID;
@@ -54,16 +54,17 @@ function SetlistCard({ s, highlight, onView, onCopy }: { s: CommunitySetlist; hi
 
       <div className="cc-tags">
         {s.isOwn && <span className="cc-tag is-own">TU SETLIST</span>}
+        {s.isDemo && <span className="cc-tag">EJEMPLO</span>}
         {classicOpen && classicClose && <span className="cc-tag">ESTRUCTURA CLÁSICA</span>}
         {!classicOpen && <span className="cc-tag is-alt">APERTURA ALTERNATIVA</span>}
       </div>
 
       <footer className="cc-actions">
-        <button className={`cc-stat ${s.liked ? 'is-on' : ''}`} onClick={() => dispatch({ type: 'like', id: s.id })} aria-pressed={!!s.liked} aria-label={`Me gusta (${s.likes})`}>
+        <button className={`cc-stat ${s.liked ? 'is-on' : ''}`} onClick={() => react(s.id, 'like')} aria-pressed={!!s.liked} aria-label={`Me gusta (${s.likes})`}>
           <Icon name="heart" size={17} />
           <span>{formatNumber(s.likes)}</span>
         </button>
-        <button className={`cc-stat ${s.voted ? 'is-on' : ''}`} onClick={() => dispatch({ type: 'vote', id: s.id })} aria-pressed={!!s.voted} aria-label={`Votar (${s.votes})`}>
+        <button className={`cc-stat ${s.voted ? 'is-on' : ''}`} onClick={() => react(s.id, 'vote')} aria-pressed={!!s.voted} aria-label={`Votar (${s.votes})`}>
           <Icon name="vote" size={17} />
           <span>{formatNumber(s.votes)}</span>
         </button>
@@ -82,7 +83,7 @@ function SetlistCard({ s, highlight, onView, onCopy }: { s: CommunitySetlist; hi
 }
 
 export function Community() {
-  const { state, dispatch, notify } = useStore();
+  const { state, notify, copyAsBase, reload } = useStore();
   const [sort, setSort] = useState<CommunitySort>('popular');
   const desktop = useMediaQuery(DESKTOP_QUERY);
   const page = desktop ? PAGE_DESKTOP : PAGE_MOBILE;
@@ -104,7 +105,7 @@ export function Community() {
   }, [state.community, sort]);
 
   const copy = (s: CommunitySetlist) => {
-    dispatch({ type: 'loadBase', setlist: s });
+    copyAsBase(s);
     setViewing(null);
     notify(`Copiaste “${s.name}”. ¡Ahora hacelo tuyo!`, 'success');
     window.setTimeout(() => scrollToId('crear'), 150);
@@ -122,7 +123,7 @@ export function Community() {
             Los setlists <span className="cm-red">de los fans</span>
           </h2>
           <p className="lede">Cada fan imagina su concierto perfecto. Votá los que más te gustan o usalos como base para armar el tuyo.</p>
-          <span className="demo-tag">SETLISTS DE DEMOSTRACIÓN</span>
+          {state.community.some((s) => s.isDemo) && <span className="demo-tag">INCLUYE SETLISTS DE EJEMPLO</span>}
         </div>
 
         <div className="chip-row cm-sorts" role="group" aria-label="Ordenar setlists">
@@ -133,6 +134,25 @@ export function Community() {
           ))}
           <span className="cm-total">{state.community.length} setlists</span>
         </div>
+
+        {state.status === 'loading' && state.community.length === 0 && (
+          <p className="cm-state" role="status">
+            Cargando setlists…
+          </p>
+        )}
+
+        {state.status === 'error' && (
+          <div className="cm-state is-error" role="alert">
+            <p>No pudimos cargar los setlists de la comunidad.</p>
+            <button className="btn btn-ghost btn-sm" onClick={reload}>
+              REINTENTAR
+            </button>
+          </div>
+        )}
+
+        {state.status === 'ready' && state.community.length === 0 && (
+          <p className="cm-state">Todavía no hay setlists. ¡Publicá el primero!</p>
+        )}
 
         <div className="cm-grid">
           {sorted.slice(0, limit).map((s) => (

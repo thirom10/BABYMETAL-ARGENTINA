@@ -302,3 +302,24 @@
     height: 520px;
   }
 }
+
+.cm-state {
+  display: grid;
+  justify-items: center;
+  gap: 10px;
+  margin: 8px 0 16px;
+  padding: 28px 16px;
+  border: 1px dashed var(--c-line-strong);
+  border-radius: var(--radius);
+  text-align: center;
+  color: var(--c-steel);
+}
+
+.cm-state p {
+  margin: 0;
+}
+
+.cm-state.is-error {
+  border-color: rgba(227, 38, 54, 0.5);
+  color: var(--c-white);
+}

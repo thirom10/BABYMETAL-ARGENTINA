@@ -247,6 +247,11 @@ a {
   transform: scale(0.97);
 }
 
+.btn:disabled {
+  opacity: 0.55;
+  pointer-events: none;
+}
+
 .btn-primary {
   background: var(--c-red);
   color: #fff;
