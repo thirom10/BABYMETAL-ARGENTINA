@@ -13,6 +13,11 @@ export const OPENING_ACT = {
   tagline: 'Artista pop rock argentina',
   channelUrl: 'https://www.youtube.com/@danielamilagros',
   channelHandle: '@danielamilagros',
+  /**
+   * Optional photo. Only with permission or a free licence (see AGENTS.md): put the file in
+   * public/images/ and fill { src: '/images/daniela-milagros.webp', credit: 'Foto: …' }.
+   */
+  photo: null as { src: string; credit: string } | null,
   songs: [
     { title: 'Mi Verdad', videoId: '6Ti7HLLPKVA' },
     { title: 'Solitaria', videoId: 'cM8nn0ORP0E' },

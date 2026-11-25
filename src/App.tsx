@@ -47,10 +47,10 @@ export default function App() {
             <Hero />
             <FanNotice />
             <RadioSection />
+            <OpeningAct />
             <PeoplesSetlist />
             <SetlistBuilder />
             <Community />
-            <OpeningAct />
             <Wildcards />
           </main>
           <Footer />

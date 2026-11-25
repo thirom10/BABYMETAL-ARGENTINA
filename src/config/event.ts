@@ -11,9 +11,9 @@ export const EVENT = {
 export const SECTIONS = [
   { id: 'countdown', label: 'COUNTDOWN' },
   { id: 'radio', label: 'RADIO' },
+  { id: 'telonera', label: 'TELONERA' },
   { id: 'setlist', label: 'SETLIST' },
   { id: 'comunidad', label: 'COMUNIDAD' },
-  { id: 'telonera', label: 'TELONERA' },
 ] as const;
 
 export const OPENER_ID = 'babymetal-death';
