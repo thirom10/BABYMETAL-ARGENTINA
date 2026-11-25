@@ -12,7 +12,6 @@ export interface ShareCardData {
   name: string;
   author: string;
   songIds: string[];
-  openers: string[];
   socialNetwork?: SocialNetwork | null;
   socialHandle?: string | null;
 }
@@ -208,21 +207,6 @@ export async function renderSetlistCard(data: ShareCardData): Promise<Blob> {
     ctx.font = `600 30px ${F_BODY}`;
     ctx.fillStyle = C.steel;
     ctx.fillText(fit(ctx, `${SOCIAL_BY_ID[data.socialNetwork].label}: @${data.socialHandle}`, contentW), PAD, y);
-  }
-
-  /* ---- openers ---- */
-  if (data.openers.length > 0) {
-    y += 50;
-    const label = data.openers.length === 1 ? 'TELONERO' : 'TELONEROS';
-    ctx.font = `700 27px ${F_LABEL}`;
-    spacing(ctx, 4);
-    ctx.fillStyle = C.gold;
-    ctx.fillText(label, PAD, y);
-    const labelW = ctx.measureText(label).width;
-    spacing(ctx, 0);
-    ctx.font = `600 31px ${F_BODY}`;
-    ctx.fillStyle = C.white;
-    ctx.fillText(fit(ctx, data.openers.join(' · '), contentW - labelW - 22), PAD + labelW + 22, y);
   }
 
   /* ---- divider ---- */

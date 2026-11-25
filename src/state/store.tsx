@@ -24,7 +24,6 @@ interface State {
   nickname: string;
   setlistName: string;
   songIds: string[];
-  openers: string[];
   socialNetwork: SocialNetwork | '';
   socialHandle: string;
   builderTab: BuilderTab;
@@ -41,7 +40,6 @@ interface State {
 type Action =
   | { type: 'nickname'; value: string }
   | { type: 'setlistName'; value: string }
-  | { type: 'openers'; value: string[] }
   | { type: 'social'; network: SocialNetwork | ''; handle: string }
   | { type: 'add'; id: string }
   | { type: 'remove'; id: string }
@@ -68,7 +66,6 @@ const initialState = (): State => {
     nickname: draft?.nickname ?? '',
     setlistName: draft?.setlistName ?? '',
     songIds: draft && draft.songIds.length > 0 ? draft.songIds : [...DEFAULT_SETLIST],
-    openers: draft?.openers ?? [],
     socialNetwork: draft?.socialNetwork ?? '',
     socialHandle: draft?.socialHandle ?? '',
     builderTab: 'songs',
@@ -87,8 +84,6 @@ function reducer(state: State, action: Action): State {
       return { ...state, nickname: action.value };
     case 'setlistName':
       return { ...state, setlistName: action.value };
-    case 'openers':
-      return { ...state, openers: action.value };
     case 'social':
       return { ...state, socialNetwork: action.network, socialHandle: action.handle };
     case 'add':
@@ -137,7 +132,6 @@ function reducer(state: State, action: Action): State {
       return {
         ...state,
         songIds: [...action.setlist.songIds],
-        openers: [...action.setlist.openers],
         setlistName: `${action.setlist.name} (remix)`.slice(0, 48),
         builderTab: 'setlist',
         community: state.community.map((s) => (s.id === action.setlist.id && !s.copied ? { ...s, copied: true, copies: s.copies + 1 } : s)),
@@ -211,11 +205,10 @@ export function StoreProvider({ children }: { children: ReactNode }) {
       nickname: state.nickname,
       setlistName: state.setlistName,
       songIds: state.songIds,
-      openers: state.openers,
       socialNetwork: state.socialNetwork,
       socialHandle: state.socialHandle,
     });
-  }, [state.nickname, state.setlistName, state.songIds, state.openers, state.socialNetwork, state.socialHandle]);
+  }, [state.nickname, state.setlistName, state.songIds, state.socialNetwork, state.socialHandle]);
 
   const load = useCallback(async () => {
     dispatch({ type: 'status', status: 'loading' });
@@ -252,7 +245,6 @@ export function StoreProvider({ children }: { children: ReactNode }) {
       name: s.setlistName.trim() || 'Mi setlist soñado',
       author: s.nickname.trim() || 'Fan anónimo',
       songIds: s.songIds,
-      openers: s.openers,
       socialNetwork: hasSocial && s.socialNetwork ? s.socialNetwork : null,
       socialHandle: hasSocial ? handle : null,
     });

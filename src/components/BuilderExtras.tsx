@@ -1,34 +1,12 @@
-import { useState, type KeyboardEvent } from 'react';
 import { SOCIAL_NETWORKS, cleanHandle } from '../config/social';
-import { cleanText } from '../lib/format';
-import { MAX_OPENERS } from '../services/setlistRepository';
 import { useAuth } from '../state/auth';
 import { useStore } from '../state/store';
 import type { SocialNetwork } from '../types';
 import { GoogleLogo } from './GoogleLogo';
-import { Icon } from './Icon';
 
-/** Social network + opening acts ("teloneros") for the setlist being built. */
+/** Optional social network for the setlist being built. */
 export function BuilderExtras({ socialError }: { socialError: boolean }) {
   const { state, dispatch } = useStore();
-  const [text, setText] = useState('');
-  const full = state.openers.length >= MAX_OPENERS;
-
-  const addOpener = () => {
-    const value = cleanText(text, 30).trim();
-    if (!value) return;
-    if (!full && !state.openers.some((o) => o.toLowerCase() === value.toLowerCase())) {
-      dispatch({ type: 'openers', value: [...state.openers, value] });
-    }
-    setText('');
-  };
-
-  const onKey = (e: KeyboardEvent<HTMLInputElement>) => {
-    if (e.key === 'Enter' || e.key === ',') {
-      e.preventDefault();
-      addOpener();
-    }
-  };
 
   return (
     <div className="sb-extras">
@@ -64,40 +42,6 @@ export function BuilderExtras({ socialError }: { socialError: boolean }) {
           />
         </div>
         <small className="sb-hint">Se muestra como link en tu setlist. Solo letras, números, punto, guion y guion bajo.</small>
-      </div>
-
-      <div className="sb-field sb-openers">
-        <span id="openers-label">TELONEROS (OPCIONAL)</span>
-        <div className="sb-openers-row">
-          <input
-            type="text"
-            aria-labelledby="openers-label"
-            placeholder={full ? `Máximo ${MAX_OPENERS}` : 'Ej: nvlo'}
-            value={text}
-            maxLength={30}
-            disabled={full}
-            autoComplete="off"
-            enterKeyHint="done"
-            onChange={(e) => setText(cleanText(e.target.value, 30))}
-            onKeyDown={onKey}
-          />
-          <button type="button" className="btn btn-ghost btn-sm" onClick={addOpener} disabled={full || !text.trim()}>
-            <Icon name="plus" size={16} /> AGREGAR
-          </button>
-        </div>
-        {state.openers.length > 0 && (
-          <ul className="sb-chips-list" aria-label="Teloneros elegidos">
-            {state.openers.map((o) => (
-              <li key={o} className="sb-opener">
-                <span>{o}</span>
-                <button type="button" onClick={() => dispatch({ type: 'openers', value: state.openers.filter((x) => x !== o) })} aria-label={`Quitar telonero ${o}`}>
-                  <Icon name="close" size={14} />
-                </button>
-              </li>
-            ))}
-          </ul>
-        )}
-        <small className="sb-hint">Quién te gustaría que abra la noche. Podés sumar hasta {MAX_OPENERS}.</small>
       </div>
     </div>
   );

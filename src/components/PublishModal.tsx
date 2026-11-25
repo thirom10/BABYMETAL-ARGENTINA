@@ -43,7 +43,6 @@ export function PublishModal({ onClose }: { onClose: () => void }) {
         name={state.setlistName.trim()}
         author={state.nickname.trim()}
         songIds={state.songIds}
-        openers={state.openers}
         socialNetwork={state.socialNetwork && HANDLE_RE.test(state.socialHandle) ? state.socialNetwork : null}
         socialHandle={state.socialHandle}
       />

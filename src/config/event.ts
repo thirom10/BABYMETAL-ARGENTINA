@@ -13,6 +13,7 @@ export const SECTIONS = [
   { id: 'radio', label: 'RADIO' },
   { id: 'setlist', label: 'SETLIST' },
   { id: 'comunidad', label: 'COMUNIDAD' },
+  { id: 'telonera', label: 'TELONERA' },
 ] as const;
 
 export const OPENER_ID = 'babymetal-death';

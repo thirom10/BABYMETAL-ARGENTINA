@@ -16,14 +16,3 @@ export function SocialLink({ network, handle }: { network?: SocialNetwork | null
     </a>
   );
 }
-
-/** "TELONERO: nvlo" / "TELONEROS: a · b" */
-export function OpenersLine({ openers, className }: { openers: string[]; className?: string }) {
-  if (openers.length === 0) return null;
-  return (
-    <p className={`openers-line ${className ?? ''}`}>
-      <b>{openers.length === 1 ? 'TELONERO' : 'TELONEROS'}</b>
-      <span>{openers.join(' · ')}</span>
-    </p>
-  );
-}

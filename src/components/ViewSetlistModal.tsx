@@ -15,7 +15,7 @@ export function ViewSetlistModal({ setlist: s, onClose, onCopy }: { setlist: Com
   const live = state.community.find((c) => c.id === s.id) ?? s;
 
   const card = useShareCard(
-    { name: s.name, author: s.author, songIds: s.songIds, openers: s.openers, socialNetwork: s.socialNetwork, socialHandle: s.socialHandle },
+    { name: s.name, author: s.author, songIds: s.songIds, socialNetwork: s.socialNetwork, socialHandle: s.socialHandle },
     s.id,
   );
 
@@ -45,7 +45,6 @@ export function ViewSetlistModal({ setlist: s, onClose, onCopy }: { setlist: Com
         name={s.name}
         author={`@${s.author}`}
         songIds={s.songIds}
-        openers={s.openers}
         socialNetwork={s.socialNetwork}
         socialHandle={s.socialHandle}
         meta={`${formatDate(s.createdAt)} · ♥ ${formatNumber(live.likes)}`}

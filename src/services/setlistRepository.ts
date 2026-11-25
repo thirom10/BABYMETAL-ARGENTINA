@@ -5,13 +5,11 @@ import type { Account, CommunitySetlist, Ranking, ReactionKind, SocialNetwork } 
 import { RepositoryError, toRepositoryError } from './errors';
 
 export const MAX_SETLISTS_PER_ACCOUNT = 3;
-export const MAX_OPENERS = 5;
 
 export interface PublishInput {
   name: string;
   author: string;
   songIds: string[];
-  openers: string[];
   socialNetwork: SocialNetwork | null;
   socialHandle: string | null;
 }
@@ -52,7 +50,7 @@ function createMockRepository(): SetlistRepository {
     list: async () => items.map((s) => ({ ...s })),
     ranking: async () => buildRanking(items.map((s) => s.songIds)),
     account: async () => ({ ...profile, used: used(), max: MAX_SETLISTS_PER_ACCOUNT }),
-    publish: async ({ name, author, songIds, openers, socialNetwork, socialHandle }) => {
+    publish: async ({ name, author, songIds, socialNetwork, socialHandle }) => {
       if (used() >= MAX_SETLISTS_PER_ACCOUNT) throw new RepositoryError('LIMIT_TOTAL');
       profile = { nickname: author, socialNetwork, socialHandle };
       const created: CommunitySetlist = {
@@ -60,7 +58,6 @@ function createMockRepository(): SetlistRepository {
         name,
         author,
         songIds: [...songIds],
-        openers: [...openers],
         socialNetwork,
         socialHandle,
         createdAt: new Date().toISOString(),
@@ -106,7 +103,6 @@ interface FeedRow {
   liked: boolean;
   voted: boolean;
   is_own: boolean;
-  openers: string[] | null;
   social_network: SocialNetwork | null;
   social_handle: string | null;
 }
@@ -145,7 +141,6 @@ function createSupabaseRepository(): SetlistRepository {
         name: r.name,
         author: r.author,
         songIds: r.song_ids,
-        openers: r.openers ?? [],
         socialNetwork: r.social_network,
         socialHandle: r.social_handle,
         createdAt: r.created_at,
@@ -183,13 +178,12 @@ function createSupabaseRepository(): SetlistRepository {
       };
     },
 
-    publish: async ({ name, author, songIds, openers, socialNetwork, socialHandle }) => {
+    publish: async ({ name, author, songIds, socialNetwork, socialHandle }) => {
       await ensureSession();
       const rows = await rpc<Array<{ new_id: string; new_created_at: string }> | null>('publish_setlist', {
         p_name: name,
         p_author: author,
         p_song_ids: songIds,
-        p_openers: openers,
         p_social_network: socialNetwork,
         p_social_handle: socialHandle,
       });
@@ -200,7 +194,6 @@ function createSupabaseRepository(): SetlistRepository {
         name,
         author,
         songIds: [...songIds],
-        openers: [...openers],
         socialNetwork,
         socialHandle,
         createdAt: row.new_created_at,

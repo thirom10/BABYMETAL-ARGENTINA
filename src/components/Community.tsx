@@ -9,7 +9,7 @@ import { DESKTOP_QUERY, useMediaQuery } from '../hooks/useMediaQuery';
 import { Icon } from './Icon';
 import { friendlyError } from '../services/errors';
 import { Modal } from './Modal';
-import { OpenersLine, SocialLink } from './SocialLink';
+import { SocialLink } from './SocialLink';
 import { ViewSetlistModal } from './ViewSetlistModal';
 import './Community.css';
 
@@ -56,8 +56,6 @@ function SetlistCard({
           <small>TEMAS</small>
         </span>
       </header>
-
-      <OpenersLine openers={s.openers} className="cc-openers" />
 
       <ol className="cc-preview">
         {preview.map((id, i) => (

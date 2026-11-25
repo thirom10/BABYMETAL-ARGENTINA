@@ -19,8 +19,6 @@ export interface CommunitySetlist {
   likes: number;
   votes: number;
   copies: number;
-  /** Opening acts (teloneros) the author imagines for the night. */
-  openers: string[];
   /** Author's preferred social network + username (both or neither). */
   socialNetwork?: SocialNetwork | null;
   socialHandle?: string | null;

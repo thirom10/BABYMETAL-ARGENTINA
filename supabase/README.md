@@ -49,8 +49,8 @@ Dar like o votar no pide cuenta: usa una sesión anónima invisible (1 por perso
 
 - **Publicar exige cuenta real de Google.** Las sesiones anónimas sólo sirven para likes y votos.
 - **Máximo 3 setlists por cuenta.** Se puede borrar uno propio para liberar un lugar.
-- Cada setlist lleva: nombre (1–48), nickname (1–24), 5–25 canciones sin repetir, hasta **5 teloneros**
-  (1–30 caracteres c/u) y, opcionalmente, **red social + usuario** (Instagram, TikTok, X, YouTube, Facebook, Twitch).
+- Cada setlist lleva: nombre (1–48), nickname (1–24), 5–25 canciones sin repetir y, opcionalmente,
+  **red social + usuario** (Instagram, TikTok, X, YouTube, Facebook, Twitch). La base todavía acepta teloneros (columna `openers`), pero el sitio ya no los pide ni los muestra; la telonera oficial está en `src/data/openingAct.ts`.
 - El **email de Google nunca se expone**: sólo se publica el nickname y la red que la persona elija.
 - Nickname y red se recuerdan en la tabla `profiles` para precargarlos la próxima vez.
 

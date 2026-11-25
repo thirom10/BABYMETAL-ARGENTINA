@@ -4,6 +4,7 @@ import { FanNotice } from './components/FanNotice';
 import { Footer } from './components/Footer';
 import { Header } from './components/Header';
 import { Hero } from './components/Hero';
+import { OpeningAct } from './components/OpeningAct';
 import { PeoplesSetlist } from './components/PeoplesSetlist';
 import { RadioPlayer } from './components/RadioPlayer';
 import { RadioSection } from './components/RadioSection';
@@ -49,6 +50,7 @@ export default function App() {
             <PeoplesSetlist />
             <SetlistBuilder />
             <Community />
+            <OpeningAct />
             <Wildcards />
           </main>
           <Footer />
